@@ -1,0 +1,28 @@
+.container {
+    background-image: url('../../assets/triangles-1430105.svg');
+    background-size: cover;
+    /* Para cobrir todo o container */
+    background-repeat: no-repeat;
+    /* Para não repetir a imagem */
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardLogin {
+    background-color: white;
+    height: 50%;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1.5%;
+}
+
+#titulo {
+    margin-bottom: 20px;
+    color: #555555;
+}

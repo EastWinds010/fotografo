@@ -1,0 +1,39 @@
+<p-table [value]="products" [tableStyle]="{'min-width': '60rem'}">
+   <!--  <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-center">
+            Tabela de Jogos
+            <p-button icon="pi pi-refresh" />
+        </div> 
+    </ng-template> -->
+    <ng-template pTemplate="header">
+        <tr>
+            <th></th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Campeonato</th>
+            <th>Categoria</th>
+            <th>Jogo</th>
+            <th>Local</th>
+            <th>Fotografo 1</th>
+            <th>Fotografo 2</th>
+            <th>Organização</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+        <tr>
+            <td>
+                <p-checkbox [binary]="true" inputId="binary" />
+            </td>
+            <td>{{product.data}}</td>
+            <td>{{product.hora}}</td>
+            <td>{{product.campeonato}}</td>
+            <td>{{product.categoria}}</td>
+            <td>{{product.jogo}}</td>
+            <td>{{product.local}}</td>
+            <td>{{product.fotografo[0].nome}}</td>
+            <td>{{product.fotografo[1].nome}}</td>
+
+            <td><p-tag [value]="product.organizacao" [severity]="getSeverity(product.organizacao)" /></td>
+        </tr>
+    </ng-template>
+</p-table>

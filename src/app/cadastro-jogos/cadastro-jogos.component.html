@@ -1,0 +1,60 @@
+<div class="container">
+    <h5>Cadastro de Jogos</h5>
+    <div class="grid p-fluid">
+      <div style="display: flex;">
+        <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="date" pInputText placeholder="Data" [(ngModel)]="jogo.data_jogo" >
+          </div>
+        </div>
+  
+        <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
+          <div class="p-inputgroup" >
+            <input type="text" pInputText placeholder="Hora">
+          </div>
+          <div *ngIf="showErrorEmailMessage">
+            <small class="error-message" style="color: red;">'erro'</small>
+          </div>
+        </div>
+  
+        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Campeonato">
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Categoria">
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 20%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Organização">
+          </div>
+        </div>
+      </div>
+  
+      <div style="display: flex; margin-top: 1%;">
+        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Mandante">
+          </div>
+        </div>
+        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Visitante">
+          </div>
+        </div>
+        <div class="col-12 md:col-4" style="width: 40%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Local">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="centered-div">
+      <p-button label="Novo Jogo"></p-button>
+    </div>
+  </div>
