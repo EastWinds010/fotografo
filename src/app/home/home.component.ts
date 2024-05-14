@@ -43,7 +43,6 @@ export class HomeComponent {
     {
       this.activeItem = this.items[0];
     }
-    console.log(this.activeItem.id)
     }
   };
 

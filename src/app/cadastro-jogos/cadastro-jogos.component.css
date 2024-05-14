@@ -1,20 +1,50 @@
 .container {
-    width: 70%;
-    margin: 0 auto;
-  
-  }
-  
-  h5{
-    font-size: 1.5rem;
-    color: rgb(97, 97, 97);
-  }
-  .centered-div {
-    display: flex;
-    justify-content: center;
-    margin-top: 2%;
-  }
-  
-  .error-input {
-    border-color: red !important;
-  }
-  
+  width: 70%;
+  margin: 0 auto;
+
+}
+
+h5 {
+  font-size: 1.5rem;
+  color: rgb(97, 97, 97);
+}
+
+.centered-div {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.divSwitch {
+  align-items: center;
+  display: flex;
+}
+
+.labelSwitch {
+  margin-right: 10px;
+}
+
+::ng-deep .switchTeste {
+  display: flex;
+}
+
+.error-input {
+  border-color: red !important;
+}
+
+::ng-deep .ui-fileupload-buttonbar .ui-fileupload-choose {
+  position: relative;
+}
+
+.button-container {
+  text-align: center;
+  /* Centraliza o botão horizontalmente */
+  margin-top: 20px;
+  /* Afasta o botão verticalmente */
+}
+
+.submit-button {
+  width: 150px;
+  /* Ajuste a largura do botão conforme necessário */
+}

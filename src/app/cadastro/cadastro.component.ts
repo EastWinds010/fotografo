@@ -95,10 +95,8 @@ export class CadastroComponent {
   }
 
   cadastroUsuario() {
-    console.log(this.user)
     this.cadastroSercice.createUser(this.user).subscribe({
       next: (data) => {
-        console.log(data.status);
         if (data.status == 200) {
          this.showDialog('Cadastro realizado com sucesso!');
         this.user = {
@@ -151,7 +149,6 @@ export class CadastroComponent {
       this.showErrorCpfMessage = false;
       this.cadastroSercice.checkCpf(this.user.cpf).subscribe({
         next: (data) => {
-          console.log(data.status);
           if (data.status != 200) {
             this.showErrorCpfMessage = true;
             this.mensageCpf = 'CPF já cadastrado!';
@@ -176,7 +173,6 @@ export class CadastroComponent {
       this.showErrorEmailMessage = false;
       this.cadastroSercice.checkEmail(this.user.email).subscribe({
         next: (data) => {
-          console.log(data.status);
           if (data.status != 200) {
             this.showErrorEmailMessage = true;
           }else{

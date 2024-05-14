@@ -52,7 +52,6 @@ export class ResetDeSenhaComponent {
   checkCredentials() {
     this.credentials.email = this.email;
     this.credentials.cpf = this.cpf;
-    console.log(this.credentials);
     this.resetPasswordService.verifyCredentials(this.credentials).subscribe({
       next: (response) => {
         const code = response.status;
@@ -63,7 +62,6 @@ export class ResetDeSenhaComponent {
           case 402:
             console.log('Senha já definida!');
             this.resetSenha = false;
-            console.log(response.id);
             localStorage.setItem('id', response.id);
             break;
           case 200:

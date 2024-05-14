@@ -1,60 +1,185 @@
 <div class="container">
-    <h5>Cadastro de Jogos</h5>
-    <div class="grid p-fluid">
-      <div style="display: flex;">
-        <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
-          <div class="p-inputgroup">
-            <input type="date" pInputText placeholder="Data" [(ngModel)]="jogo.data_jogo" >
-          </div>
-        </div>
-  
-        <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
-          <div class="p-inputgroup" >
-            <input type="text" pInputText placeholder="Hora">
-          </div>
-          <div *ngIf="showErrorEmailMessage">
-            <small class="error-message" style="color: red;">'erro'</small>
-          </div>
-        </div>
-  
-        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Campeonato">
-          </div>
-        </div>
+  <h5>Cadastro de Jogos</h5>
 
-        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Categoria">
-          </div>
-        </div>
-
-        <div class="col-12 md:col-4" style="width: 20%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Organização">
-          </div>
+  <div class="grid p-fluid">
+    <div style="display: flex;">
+      <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="date" pInputText placeholder="Data" (input)="formatDate($event)">
         </div>
       </div>
-  
-      <div style="display: flex; margin-top: 1%;">
-        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Mandante">
-          </div>
+
+      <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Hora" [(ngModel)]="jogo.hora">
         </div>
-        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Visitante">
-          </div>
+        <div *ngIf="showErrorEmailMessage">
+          <small class="error-message" style="color: red;">'erro'</small>
         </div>
-        <div class="col-12 md:col-4" style="width: 40%;">
-          <div class="p-inputgroup">
-            <input type="text" pInputText placeholder="Local">
-          </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Campeonato" [(ngModel)]="jogo.campeonato">
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Categoria" [(ngModel)]="jogo.categoria">
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 20%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Organização" [(ngModel)]="jogo.organizacao">
         </div>
       </div>
     </div>
-    <div class="centered-div">
-      <p-button label="Novo Jogo"></p-button>
+
+    <div style="display: flex; margin-top: 1%;">
+      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Mandante" [(ngModel)]="jogo.mandante">
+        </div>
+      </div>
+      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Visitante" [(ngModel)]="jogo.visitante">
+        </div>
+      </div>
+      <div class="col-12 md:col-4" style="width: 40%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Local" [(ngModel)]="jogo.local">
+        </div>
+      </div>
     </div>
   </div>
+  <div class="centered-div">
+    <div class="divSwitch">
+      <label class="labelSwitch">O jogo precisa de ARFOC</label>
+      <p-inputSwitch styleClass="switchTeste" [(ngModel)]="jogo.arfoc" />
+    </div>
+    <p-button label="Novo Jogo" (onClick)="onSubmit(jogo)"></p-button>
+  </div>
+
+  <p-fileUpload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" accept=".csv"
+    chooseLabel="Importar CSV" uploadLabel="Upload" cancelLabel="Cancelar" (onUpload)="onUpload($event)">
+  </p-fileUpload>
+
+  <p-table [value]="listaJogos" [tableStyle]="{'min-width': '60rem'}">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Campeonato</th>
+        <th>Categoria</th>
+        <th>Jogo</th>
+        <th>Local</th>
+        <th>Organização</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-jogo let-rowIndex="rowIndex">
+      <tr>
+        <td>{{jogo.data_jogo}}</td>
+        <td>{{jogo.hora}}</td>
+        <td>{{jogo.campeonato}}</td>
+        <td>{{jogo.categoria}}</td>
+        <td>{{jogo.mandante}} x {{jogo.visitante}}</td>
+        <td>{{jogo.local}}</td>
+        <td><p-tag [value]="jogo.organizacao" [severity]="getSeverity(jogo.organizacao)"  /></td>
+        <td><p-button icon="pi pi-pencil" (onClick)="showModalEdit(rowIndex)"></p-button></td>
+        <td><p-button icon="pi pi-trash" (onClick)="showModalDelete(jogo.id)"></p-button></td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [header]="mensagemUploadJogos" [modal]="true" [(visible)]="visibleUploadJogos" [style]="{ width: '25rem' }"
+  [closable]="false">
+  <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" *ngIf="porcentagemJogosEnviados <= 0"></p-progressBar>
+  <p-progressBar [value]="porcentagemJogosEnviados" *ngIf="porcentagemJogosEnviados > 0"></p-progressBar>
+
+  <div class="button-container" *ngIf="porcentagemJogosEnviados == 100">
+    <p-button label="Ok" class="submit-button" (click)="visibleUploadJogos = false"></p-button>
+  </div>
+</p-dialog>
+
+<p-dialog header="Remover Jogo" [modal]="true" [(visible)]="visibleDeleteJogo" [style]="{ width: '25rem' }"
+  [closable]="false">
+
+  <div class="flex align-items-center gap-3 mb-3">
+    <label class="font-semibold w-6rem">Deseja realmente Excluir o jogo selecionado ?</label>
+  </div>
+
+  <div class="flex justify-content-end gap-2">
+    <p-button label="Cancelar" (click)="visibleDeleteJogo = false" />
+    <p-button label="Excluir" severity="danger" (click)="deletaJogo()" />
+  </div>
+</p-dialog>
+
+<p-dialog header="Edição de Jogo" [modal]="true" [(visible)]="visibleEditJogo" [style]="{ width: '60rem' }">
+  <div class="grid p-fluid">
+    <div style="display: flex;">
+      <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="date" pInputText placeholder="Data" [(ngModel)]="jogoEdit.data_jogo">
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Hora" [(ngModel)]="jogoEdit.hora">
+        </div>
+        <div *ngIf="showErrorEmailMessage">
+          <small class="error-message" style="color: red;">'erro'</small>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Campeonato" [(ngModel)]="jogoEdit.campeonato">
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Categoria" [(ngModel)]="jogoEdit.categoria">
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4" style="width: 20%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Organização" [(ngModel)]="jogoEdit.organizacao">
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; margin-top: 1%;">
+      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Mandante" [(ngModel)]="jogoEdit.mandante">
+        </div>
+      </div>
+      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Visitante" [(ngModel)]="jogoEdit.visitante">
+        </div>
+      </div>
+      <div class="col-12 md:col-4" style="width: 40%;">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Local" [(ngModel)]="jogoEdit.local">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="centered-div">
+    <div class="divSwitch">
+      <label class="labelSwitch">O jogo precisa de ARFOC</label>
+      <p-inputSwitch styleClass="switchTeste" [(ngModel)]="jogoEdit.arfoc" />
+    </div>
+    <p-button label="Editar Jogo" ></p-button>
+  </div>
+</p-dialog>

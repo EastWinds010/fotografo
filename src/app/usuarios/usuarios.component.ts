@@ -35,7 +35,6 @@ export class UsuariosComponent {
   ngOnInit() {
     this.usuariosService.getUsuarios().subscribe({
       next: (data) => {
-        console.log(data.result);
         this.products = data.result;
       },
       error: (error) => {
@@ -99,8 +98,5 @@ export class UsuariosComponent {
     console.log(this.form.value);
     console.log(this.idUser);
   };
-  teste(teste: any) {
-    console.log(teste);
-    console.log('aqui');
-  }
+
 }

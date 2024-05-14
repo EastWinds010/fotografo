@@ -27,7 +27,6 @@ export class LoginComponent {
     this.loginService.login(this.email, this.password).subscribe({
       next: (data) => {
         if(data.status == 200){
-          console.log(data.result);
           localStorage.setItem('role', data.result.role);
           this.router.navigate(['/home']);
         }
