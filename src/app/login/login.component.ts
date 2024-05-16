@@ -27,7 +27,9 @@ export class LoginComponent {
     this.loginService.login(this.email, this.password).subscribe({
       next: (data) => {
         if(data.status == 200){
+          console.log(data);
           localStorage.setItem('role', data.result.role);
+          localStorage.setItem('idFotografo', data.result.idFotografo);
           this.router.navigate(['/home']);
         }
       },

@@ -36,7 +36,7 @@ interface Jogos {
 export class CadastroJogosComponent implements OnInit {
 
   constructor(
-    private jogosService: JogosService
+    private jogosService: JogosService,
   ) { }
   porcentagemJogosEnviados: number = 0;
   showErrorEmailMessage: boolean = false;
@@ -65,11 +65,11 @@ export class CadastroJogosComponent implements OnInit {
     arfoc: false,
     organizacao: ''
   };
-   jogoAtual:number = 0;
-   visibleUploadJogos: boolean = false;
-   visibleDeleteJogo: boolean = false;
-   visibleEditJogo: boolean = false;
-   idDelete: number = -1;
+  jogoAtual: number = 0;
+  visibleUploadJogos: boolean = false;
+  visibleDeleteJogo: boolean = false;
+  visibleEditJogo: boolean = false;
+  idDelete: number = -1;
 
   ngOnInit() {
     this.jogosService.listaJogos().subscribe(
@@ -85,12 +85,10 @@ export class CadastroJogosComponent implements OnInit {
   };
 
   async onSubmit(jogo: Jogos, totalJogos?: number) {
-
     this.jogosService.insereJogo(jogo).subscribe(
-
       {
 
-         next: (data) => {
+        next: (data) => {
           const jogoFormatado = {
             id: data.id,
             data_jogo: jogo.data_jogo,
@@ -108,7 +106,19 @@ export class CadastroJogosComponent implements OnInit {
           this.porcentagemJogosEnviados = Math.floor((this.jogoAtual / totalJogos!) * 100);
           if (this.porcentagemJogosEnviados == 100) {
             this.mensagemUploadJogos = 'Jogos enviados com sucesso!'
-          }
+          }else{
+          };
+          this.jogo = {
+            data_jogo: '',
+            hora: '',
+            campeonato: '',
+            categoria: '',
+            mandante: '',
+            visitante: '',
+            local: '',
+            arfoc: false,
+            organizacao: ''
+          };
         },
         error: (error) => {
           console.log(error);
@@ -117,15 +127,15 @@ export class CadastroJogosComponent implements OnInit {
     );
   };
 
-  formatDate(event: any): string{
+  formatDate(event: any): string {
     const date = event.target.value;
-    let dateFormaer = `${date.substring(8,10)}/${date.substring(5,7)}/${date.substring(0,4)}`
+    let dateFormaer = `${date.substring(8, 10)}/${date.substring(5, 7)}/${date.substring(0, 4)}`
     return this.jogo.data_jogo = dateFormaer;
   }
-  formatDateEdit(event: any): string{
-    
+  formatDateEdit(event: any): string {
+
     const date = event.target.value;
-    let dateFormaer = `${date.substring(8,10)}/${date.substring(5,7)}/${date.substring(0,4)}`
+    let dateFormaer = `${date.substring(8, 10)}/${date.substring(5, 7)}/${date.substring(0, 4)}`
     return this.jogoEdit.data_jogo = dateFormaer;
   }
 
@@ -164,7 +174,7 @@ export class CadastroJogosComponent implements OnInit {
       complete: async (results) => {
         const data = results.data;
         const tamanhoAray = data.length - 1;
-        
+
         for (let index = 1; index < data.length; index++) {
           const element = data[index] as string[];
           const jogo: Jogos = {
@@ -184,15 +194,30 @@ export class CadastroJogosComponent implements OnInit {
     });
   };
 
-  showModalDelete(id: number){
+  showModalDelete(id: number) {
     this.visibleDeleteJogo = true;
     this.idDelete = id;
   };
 
-  showModalEdit(id: number){
+  showModalEdit(id: number) {
     this.visibleEditJogo = true;
     console.log(this.listaJogos[id].arfoc);
     this.jogoEdit = this.listaJogos[id];
-    
+
   };
+
+  closeModalEdit() {
+    this.visibleEditJogo = false;
+    this.jogoEdit = {
+      data_jogo: '',
+      hora: '',
+      campeonato: '',
+      categoria: '',
+      mandante: '',
+      visitante: '',
+      local: '',
+      arfoc: false,
+      organizacao: ''
+    };
+  }
 }

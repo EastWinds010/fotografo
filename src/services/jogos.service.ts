@@ -19,6 +19,7 @@ export class JogosService {
     return this.http.delete(`https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api/deleteJogo/${id}`).pipe(take(1));
   };
   public atualizaJogo(id:number ,dadosJogo: any): Observable<any> {
-    return this.http.put(`https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api/updateJogo/${id}`, dadosJogo).pipe(take(1));
+    console.log(`https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api/updateJogo/${id}`)
+    return this.http.put(`http://localhost:3306/api/updateJogo/${id}`, dadosJogo).pipe(take(1));
   }
 }
