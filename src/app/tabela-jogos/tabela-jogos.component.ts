@@ -8,6 +8,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { JogosService } from '../../services/jogos.service';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-tabela-jogos',
@@ -35,7 +36,10 @@ Lógica
 export class TabelaJogosComponent implements OnInit {
   constructor(
     private jogosService: JogosService,
-  ) { }
+  ) { 
+
+
+  }
   listaJogos: any[] = [];
   listaCheck: Boolean[] = [];
   visible: boolean = false;
@@ -65,7 +69,6 @@ export class TabelaJogosComponent implements OnInit {
   confirmaJogo() {
     const idFotografo = localStorage.getItem('idFotografo');
     const nome = localStorage.getItem('nome');
-    console.log(this.jogo)
     for (let index = 0; index < this.jogo.fotografo.length; index++) {
       const element = this.jogo.fotografo[index];
       if (element.id == null || element.id == idFotografo) {
@@ -88,11 +91,21 @@ export class TabelaJogosComponent implements OnInit {
   travaJogo(posicaoDoJogoNoArray: number, travaJogo: boolean) {
     this.jogo = this.listaJogos[posicaoDoJogoNoArray];
     this.jogo.trava = travaJogo;
-    console.log(this.jogo);
+    const idFotografo = localStorage.getItem('idFotografo');
+    const nomeFoto = localStorage.getItem('nome');
+    for (let i = 0; i < this.jogo.fotografo.length; i++) {
+      const element = this.jogo.fotografo[i];
+      if (element.id == null || element.id == idFotografo) {
+        element.id = idFotografo;
+        element.nome = nomeFoto;
+        break;
+      };
+      
+    }
     if (this.jogo.myGame) {
       this.jogosService.listaJogoId(this.jogo.id).subscribe({
         next: (response) => {
-          if(response.result.trava == false){
+          if (response.result.trava == false) {
             this.jogosService.atualizaJogo(this.jogo.id, this.jogo).subscribe({
               next: (response) => {
                 this.visible = true;
@@ -101,8 +114,8 @@ export class TabelaJogosComponent implements OnInit {
                 console.log(error);
               }
             });
-            
-          }else{
+
+          } else {
             this.feedback = true;
             this.jogo.myGame = false;
             this.jogo.trava = true;
@@ -121,7 +134,7 @@ export class TabelaJogosComponent implements OnInit {
     const idFotografo = localStorage.getItem('idFotografo');
     for (let index = 0; index < this.jogo.fotografo.length; index++) {
       const element = this.jogo.fotografo[index];
-      if(element.id == idFotografo){
+      if (element.id == idFotografo) {
         element.id = null;
         element.nome = null;
         break;

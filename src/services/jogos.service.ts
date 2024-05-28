@@ -6,7 +6,7 @@ import { Observable, take } from 'rxjs';
   providedIn: 'root'
 })
 export class JogosService {
-  baseUrlLocal: string = 'http://localhost:3300/api';
+  baseUrlLocal: string = 'http://localhost:3307/api';
   baseUrl: string = 'https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api';
 
   constructor(private http: HttpClient) { }
