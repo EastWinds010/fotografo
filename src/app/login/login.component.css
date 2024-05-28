@@ -1,28 +1,66 @@
+.p-inputtext {
+    margin: 0;
+    width: 100%;
+}
 .container {
     background-image: url('../../assets/triangles-1430105.svg');
-    background-size: cover;
-    /* Para cobrir todo o container */
-    background-repeat: no-repeat;
-    /* Para não repetir a imagem */
+    display: flex;
     height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.cardLogin {
-    background-color: white;
-    height: 50%;
-    width: 20%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 1.5%;
-}
-
-#titulo {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .cardLogin {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  
+  #titulo {
+    text-align: center;
     margin-bottom: 20px;
-    color: #555555;
-}
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .footer a {
+    text-decoration: none;
+  }
+  
+  .footer small {
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    .button-group {
+      flex-direction: column;
+    }
+  
+    .button-group p-button {
+      margin-bottom: 10px;
+    }
+  }
+  

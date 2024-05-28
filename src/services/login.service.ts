@@ -6,10 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoginService {
-
+  baseUrlLocal: string = 'http://localhost:3300/api';
+  baseUrl: string = 'https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api';
   constructor(private http: HttpClient) { }
 
   public login(email: any, password: any): Observable<any> {
-    return this.http.post('https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api/login',{email, password});
+    return this.http.post(`${this.baseUrlLocal}/login`,{email, password});
   }
 }

@@ -30,6 +30,8 @@ export class LoginComponent {
           console.log(data);
           localStorage.setItem('role', data.result.role);
           localStorage.setItem('idFotografo', data.result.idFotografo);
+          localStorage.setItem('nome', data.result.nome);
+          localStorage.setItem('isLogged', 'true');
           this.router.navigate(['/home']);
         }
       },
