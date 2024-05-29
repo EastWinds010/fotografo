@@ -1,13 +1,13 @@
 <div class="container">
   <div class="cardLogin">
     <h1 id="titulo">Tabela de Jogos</h1>
-    <div class="input-group">
+    <div class="">
       <label for="email">E-mail</label>
       <input id="email" class="teste" type="email" pInputText [(ngModel)]="email" />
     </div>
-    <div class="input-group">
+    <div class="">
       <label for="password">Senha</label>
-      <p-password id="password" [(ngModel)]="password" [toggleMask]="true" [feedback]="false"></p-password>
+      <p-password id="password" [(ngModel)]="password" [toggleMask]="true" [feedback]="false" [style]="{'width':'100%'}"></p-password>
     </div>
     <div class="button-group">
       <p-button label="Primeiro Acesso" [raised]="true" severity="success" (onClick)="firstAcess()"></p-button>

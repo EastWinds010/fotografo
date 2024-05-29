@@ -1,13 +1,16 @@
 <div class="container">
   <div class="cardLogin" *ngIf="resetSenha" style="position: relative;">
     <h1 id="titulo">Recuperação de Senha</h1>
-    <label id="titulo">Para recuperar a senha você deve informar o e-mail e cpf cadastrado no sistema</label>
-    <div class="teste">
+    <label id="subtitulo">Para recuperar a senha você deve informar o e-mail e cpf cadastrado no sistema</label>
+    <div>
       <p>E-mail</p>
       <input type="email" pInputText placeholder="exemplo123@gmail.com" [(ngModel)]="email" (input)="checkEmail()"
         [ngClass]="{'error-input': showErrorEmailMessage}">
+        <div *ngIf="showErrorEmailMessage">
+          <small class="error-message" style="color: red;">Email Inválido</small>
+        </div>
     </div>
-    <div class="teste">
+    <div>
       <p>CPF</p>
       <input type="tel" mask="000.000.000-00" pInputText placeholder="125.578.987-98" [(ngModel)]="cpf"
         (input)="checkCpf()" maxlength="14" [ngClass]="{'error-input': showErrorCpfMessage}">

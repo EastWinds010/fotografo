@@ -22,11 +22,19 @@
     border-radius: 1.5%;
 }
 
+#subtitulo {
+    margin-bottom: 20px;
+    color: #555555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 2rem 0 2rem;
+}
+
 #titulo {
     margin-bottom: 20px;
     color: #555555;
 }
-
 .error-input {
     border-color: red !important;
   }
