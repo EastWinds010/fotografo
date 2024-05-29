@@ -1,0 +1,6 @@
+.desativado {
+    background-color: #f5f5f5;
+    color: #a1a1a1;
+    pointer-events: none; 
+  }
+  

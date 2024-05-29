@@ -1,19 +1,21 @@
 <div class="container">
-  <div class="cardLogin" style="position: relative;">
+  <div class="cardLogin">
     <h1 id="titulo">Tabela de Jogos</h1>
-    <div class="teste">
-      <p>E-mail</p>
-      <input type="email" pInputText [(ngModel)]="email" />
+    <div class="input-group">
+      <label for="email">E-mail</label>
+      <input id="email" class="teste" type="email" pInputText [(ngModel)]="email" />
     </div>
-    <div class="teste">
-      <p>Senha</p>
-      <p-password [(ngModel)]="password" [toggleMask]="true" [feedback]="false"  ></p-password>
+    <div class="input-group">
+      <label for="password">Senha</label>
+      <p-password id="password" [(ngModel)]="password" [toggleMask]="true" [feedback]="false"></p-password>
     </div>
-    <div style="margin-top: 10%;">
-      <p-button label="Primeiro Acesso" [raised]="true" severity="success" (onClick)="firstAcess()" [style.marginRight.px]="35"></p-button>
-  <p-button label="Login" [raised]="true" severity="info" (onClick)="onLogin()" [style.marginLeft.px]="10"></p-button>
+    <div class="button-group">
+      <p-button label="Primeiro Acesso" [raised]="true" severity="success" (onClick)="firstAcess()"></p-button>
+      <p-button label="Login" [raised]="true" severity="info" (onClick)="onLogin()"></p-button>
     </div>
-    <a href="/recuperar-senha" style="position: absolute; bottom: 0; right: 0;">Esqueci minha senha</a>
-    <small style="position: absolute; bottom: 0; left: 0;">Versão 0.0.4</small>
+    <div class="footer">
+      <a href="/recuperar-senha">Esqueci minha senha</a>
+      <small>Versão 0.0.4</small>
+    </div>
   </div>
 </div>

@@ -72,7 +72,7 @@ export class CadastroJogosComponent implements OnInit {
   idDelete: number = -1;
 
   ngOnInit() {
-    this.jogosService.listaJogos().subscribe(
+    this.jogosService.listaJogos({id: 8}).subscribe(
       {
         next: (data) => {
           this.listaJogos = data.result;
