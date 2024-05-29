@@ -8,7 +8,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { JogosService } from '../../services/jogos.service';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { WebsocketService } from '../../services/websocket.service';
+import { Subscription } from 'rxjs';
+import { WebSocketService } from '../../services/websocket.service';
+
 
 @Component({
   selector: 'app-tabela-jogos',
@@ -34,13 +36,16 @@ Lógica
 
 */
 export class TabelaJogosComponent implements OnInit {
+  private messageSubscription!: Subscription;
   constructor(
     private jogosService: JogosService,
-  ) { 
+    private webSocketService: WebSocketService
+  ) {
 
 
   }
   listaJogos: any[] = [];
+  jogoAtualizado: any = {};
   listaCheck: Boolean[] = [];
   visible: boolean = false;
   visible2: boolean = false;
@@ -49,6 +54,15 @@ export class TabelaJogosComponent implements OnInit {
   jogo: any = {};
   travaJ: boolean = false;
   ngOnInit(): void {
+    this.messageSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message) => {
+        console.log(message)
+        this.handleMessage(message);
+      },
+      error: (error) => {
+        console.error('WebSocket error:', error);
+      }
+    });
     const idUser = parseInt(localStorage.getItem('idFotografo')!);
 
     this.jogosService.listaJogos({ id: idUser }).subscribe({
@@ -65,6 +79,36 @@ export class TabelaJogosComponent implements OnInit {
 
     })
   };
+
+  handleMessage(blob: Blob) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const json = JSON.parse(reader.result as string);
+        this.jogoAtualizado = json;
+        const myId = parseInt(localStorage.getItem('idFotografo')!);
+        const idJogo = this.jogoAtualizado.id;
+        const index = this.listaJogos.findIndex((jogo) => jogo.id === idJogo);
+        if(this.jogoAtualizado.fotografo.some((fotografo: any) => fotografo.id === myId)) {
+          this.jogoAtualizado.myGame = true;
+        }
+        const fotografo1 = this.jogoAtualizado.fotografo[0].id;
+        const fotografo2 = this.jogoAtualizado.fotografo[1].id;
+        if(fotografo1 != null && fotografo1 != myId && fotografo2 != null && fotografo2 != myId && this.jogoAtualizado.trava == false){
+          this.jogoAtualizado.disponivel = false;
+        }
+        this.listaJogos[index] = this.jogoAtualizado;
+        console.log(this.listaJogos[index]);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+      }
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading Blob:', error);
+    };
+    reader.readAsText(blob);
+  }
+
 
   confirmaJogo() {
     const idFotografo = localStorage.getItem('idFotografo');
@@ -100,7 +144,7 @@ export class TabelaJogosComponent implements OnInit {
         element.nome = nomeFoto;
         break;
       };
-      
+
     }
     if (this.jogo.myGame) {
       this.jogosService.listaJogoId(this.jogo.id).subscribe({
