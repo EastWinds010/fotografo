@@ -47,148 +47,111 @@ export class TabelaJogosComponent implements OnInit {
   listaJogos: any[] = [];
   jogoAtualizado: any = {};
   listaCheck: Boolean[] = [];
+  listaCheckJogosDatasIguais: Boolean[] = [];
   visible: boolean = false;
   visible2: boolean = false;
   feedback: boolean = false;
   idJogo: number = -1;
-  jogo: any = {};
+  jogosDatasIguais: any = [];
   travaJ: boolean = false;
+  idUser: number = -1;
+  jogosAlterados: any = [];
   ngOnInit(): void {
     this.messageSubscription = this.webSocketService.getMessages().subscribe({
       next: (message) => {
-        console.log(message)
-        this.handleMessage(message);
+      this.handleMessage(message);
       },
       error: (error) => {
         console.error('WebSocket error:', error);
       }
     });
-    const idUser = parseInt(localStorage.getItem('idFotografo')!);
+    this.idUser = parseInt(localStorage.getItem('idFotografo')!);
 
-    this.jogosService.listaJogos({ id: idUser }).subscribe({
+    this.jogosService.listaJogos().subscribe({
       next: (response) => {
         this.listaJogos = response.result;
-        for (let i = 0; i < this.listaJogos.length; i++) {
-          const element = this.listaJogos[i].trava;
-          this.listaCheck.push(element);
-        }
+        this.listaJogos.map((jogo: { myGame: boolean; travado: boolean}) => {
+          jogo.myGame = this.verificaMyGame(jogo);
+          jogo.travado = this.verificaTrava(jogo);
+          return jogo;
+        });
+        console.log(this.listaJogos);
       },
       error: (error) => {
         console.log(error);
       }
-
     })
   };
 
-  handleMessage(blob: Blob) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const json = JSON.parse(reader.result as string);
-        this.jogoAtualizado = json;
-        const myId = parseInt(localStorage.getItem('idFotografo')!);
-        const idJogo = this.jogoAtualizado.id;
-        const index = this.listaJogos.findIndex((jogo) => jogo.id === idJogo);
-        if(this.jogoAtualizado.fotografo.some((fotografo: any) => fotografo.id === myId)) {
-          this.jogoAtualizado.myGame = true;
-        }
-        const fotografo1 = this.jogoAtualizado.fotografo[0].id;
-        const fotografo2 = this.jogoAtualizado.fotografo[1].id;
-        if(fotografo1 != null && fotografo1 != myId && fotografo2 != null && fotografo2 != myId && this.jogoAtualizado.trava == false){
-          this.jogoAtualizado.disponivel = false;
-        }
-        this.listaJogos[index] = this.jogoAtualizado;
-        console.log(this.listaJogos[index]);
-      } catch (e) {
-        console.error('Error parsing JSON:', e);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error('Error reading Blob:', error);
-    };
-    reader.readAsText(blob);
-  }
-
-
-  confirmaJogo() {
-    const idFotografo = localStorage.getItem('idFotografo');
-    const nome = localStorage.getItem('nome');
-    for (let index = 0; index < this.jogo.fotografo.length; index++) {
-      const element = this.jogo.fotografo[index];
-      if (element.id == null || element.id == idFotografo) {
-        element.id = idFotografo;
-        element.nome = nome;
-        break;
-      };
+  verificaTrava(jogo: any): boolean {
+    if(jogo.myGame){
+      return false;
     }
-    this.jogo.trava = false;
-    this.jogosService.atualizaJogo(this.jogo.id, this.jogo).subscribe({
-      next: (response) => {
-        this.visible = false;
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
-  }
-
-  travaJogo(posicaoDoJogoNoArray: number, travaJogo: boolean) {
-    this.jogo = this.listaJogos[posicaoDoJogoNoArray];
-    this.jogo.trava = travaJogo;
-    const idFotografo = localStorage.getItem('idFotografo');
-    const nomeFoto = localStorage.getItem('nome');
-    for (let i = 0; i < this.jogo.fotografo.length; i++) {
-      const element = this.jogo.fotografo[i];
-      if (element.id == null || element.id == idFotografo) {
-        element.id = idFotografo;
-        element.nome = nomeFoto;
-        break;
-      };
-
+    if(jogo.status == 3 || jogo.status == 5 || jogo.status == 6 || jogo.status == 1 ){
+      return true;
     }
-    if (this.jogo.myGame) {
-      this.jogosService.listaJogoId(this.jogo.id).subscribe({
+    return false;
+  }
+  verificaMyGame(jogo: any): boolean {
+    for (let i = 0; i < jogo.fotografos.length; i++) {
+      const idFotografo = jogo.fotografos[i].id_fotografo;
+      if(idFotografo == this.idUser){
+        return true;
+      }
+    }
+    return false;
+  }
+  selecionaJogo(event: any, rowIndex: number) {
+    if (event.checked) {
+      this.idJogo = this.listaJogos[rowIndex].id;
+      const idLocal = this.listaJogos[rowIndex].local.id_local;
+      this.jogosService.listaJogosLocal(idLocal).subscribe({
         next: (response) => {
-          if (response.result.trava == false) {
-            this.jogosService.atualizaJogo(this.jogo.id, this.jogo).subscribe({
-              next: (response) => {
-                this.visible = true;
-              },
-              error: (error) => {
-                console.log(error);
-              }
+          this.jogosDatasIguais = response.result;
+          this.jogosDatasIguais.map((jogo: { selecionado: boolean; }) =>{
+            jogo.selecionado = false;
+            return jogo;
+          })
+          const statusJogos: { id: any; status: number; }[] = []
+          this.jogosDatasIguais.forEach((jogo: any) => {
+            if(this.idJogo == jogo.id){
+              jogo.selecionado = true;
+            }else{
+              jogo.selecionado = false;
+            }
+            statusJogos.push({
+              id: jogo.id,
+              status: 3
             });
-
-          } else {
-            this.feedback = true;
-            this.jogo.myGame = false;
-            this.jogo.trava = true;
-          }
+          });
+          this.jogosService.alterarStatusJogoDatasIguais(statusJogos).subscribe({
+            next: (response) => {
+              this.visible = true;
+            },
+            error: (error) => {
+              console.log(error);
+            }
+          });
         },
         error: (error) => {
           console.log(error);
         }
       });
     } else {
+      this.idJogo = this.listaJogos[rowIndex].id;
       this.visible2 = true;
     }
-  }
+  };
 
-  desmarcaJogo() {
-    const idFotografo = localStorage.getItem('idFotografo');
-    for (let index = 0; index < this.jogo.fotografo.length; index++) {
-      const element = this.jogo.fotografo[index];
-      if (element.id == idFotografo) {
-        element.id = null;
-        element.nome = null;
-        break;
-      }
-    };
-    this.jogo.trava = false;
-    this.jogo.myGame = false;
-    this.jogosService.atualizaJogo(this.jogo.id, this.jogo).subscribe({
+  abandonarJogo(){
+    const statusJogo = {
+      status: 2,
+      idJogo: this.idJogo,
+      idFotografo: this.idUser
+    }
+    this.jogosService.abandonarJogo(statusJogo).subscribe({
       next: (response) => {
-        this.visible = false;
+        console.log(response);
         this.visible2 = false;
       },
       error: (error) => {
@@ -197,6 +160,70 @@ export class TabelaJogosComponent implements OnInit {
     });
 
   }
+  salvarJogosDatasIguais(){
+
+    for (let index = 0; index < this.jogosDatasIguais.length; index++) {
+      const jogo = this.jogosDatasIguais[index];
+
+      if(jogo.selecionado){
+        const dadosJogos = {
+          fotografoId: this.idUser,
+          jogoId: jogo.id
+        }
+        this.jogosService.vincularFotografo(dadosJogos).subscribe({
+          next: (response) => {
+          },
+          error: (error) => {
+            console.log(error);
+          }
+        });
+      } else{
+        const dadosStatus = {
+          id: jogo.id,
+          status: 2
+        }
+        this.jogosService.alterarStatusJogoDatasIguais([dadosStatus]).subscribe({
+          next: (response) => {
+            console.log(response);
+          },
+          error: (error) => {
+            console.log(error);
+          }
+        });
+      }
+      
+    }
+    this.visible = false;
+
+  }
+
+
+  handleMessage(blob: Blob) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const jsonText = reader.result as string; // Converte o resultado do FileReader em texto
+        const json = JSON.parse(jsonText); 
+        console.log(json);
+        this.jogosAlterados = json;
+        this.jogosAlterados.map((jogo: { myGame: boolean; travado: boolean}) => {
+          jogo.myGame = this.verificaMyGame(jogo);
+          jogo.travado = this.verificaTrava(jogo);
+          return jogo;
+        });
+        this.listaJogos = this.substituirObjetos(this.listaJogos, this.jogosAlterados);
+        console.log(this.listaJogos);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+      }
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading Blob:', error);
+    };
+    reader.readAsText(blob); // Converte o Blob em texto
+  }
+  
+  
 
   getSeverity(status: string) {
     switch (status) {
@@ -211,4 +238,11 @@ export class TabelaJogosComponent implements OnInit {
     }
   }
 
+  substituirObjetos(originais: any[], novos: any[]): any[] {
+    // Cria um mapa de novos objetos com base no id
+    const novosMap = new Map(novos.map(novo => [novo.id, novo]));
+
+    // Itera sobre o array original e substitui os objetos que têm o mesmo id
+    return originais.map(original => novosMap.get(original.id) || original);
+}
 }
