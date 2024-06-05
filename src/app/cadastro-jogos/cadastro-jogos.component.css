@@ -48,3 +48,10 @@ h5 {
   width: 150px;
   /* Ajuste a largura do botão conforme necessário */
 }
+::ng-deep .p-multiselect-header {
+  display: none;
+}
+::ng-deep .p-card .p-card-body {
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}

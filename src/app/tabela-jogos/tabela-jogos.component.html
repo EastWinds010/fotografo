@@ -20,34 +20,32 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
-        <tr [ngClass]="{'desativado': product.disponivel == false || product.trava == true && product.myGame == false}">
-            <td *ngIf="product.disponivel == true || product.trava == true">
-                <p-checkbox [binary]="true" inputId="binary" [(ngModel)]="product.myGame"
-                    (onChange)="travaJogo(rowIndex, product.myGame )" />
-            </td>
-            <td *ngIf="product.disponivel == false">
+        <tr [ngClass]="{'desativado': product.travado}" >
+            <td >
+                <p-checkbox [binary]="true" [(ngModel)]="product.myGame" (onChange)="selecionaJogo($event, rowIndex)" inputId="binary"/>
             </td>
             <td>{{product.data_jogo}}</td>
             <td>{{product.hora}}</td>
             <td>{{product.campeonato}}</td>
             <td>{{product.categoria}}</td>
             <td>{{product.mandante}} x {{product.visitante}}</td>
-            <td>{{product.local}}</td>
-            <td>{{product.fotografo[0].nome}}</td>
-            <td>{{product.fotografo[1].nome}}</td>
+            <td>{{product.local.nome_local}}</td>
+            <td>{{product.fotografos[0] == null ? "": product.fotografos[0].dados_fotografo.nome}}</td>
+            <td>{{product.fotografos[1] == null ? "": product.fotografos[1].dados_fotografo.nome}}</td>
 
             <td><p-tag [value]="product.organizacao" [severity]="getSeverity(product.organizacao)" /></td>
         </tr>
     </ng-template>
 </p-table>
 
-<p-dialog header="Seleção de Jogo" [(visible)]="visible" [modal]="true"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false"
+<p-dialog header="Deseja confirmar presentaça para o(os) jogo(s) selecionado(s) ?" [(visible)]="visible" [modal]="true" [closable]="false"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '70vw' }" [draggable]="false"
     [resizable]="false">
     <span class="p-text-secondary block mb-5">Deseja confirmar presentaça para o jogo selecionado ?</span>
-    <p-table [value]="[jogo]" >
+    <p-table [value]="jogosDatasIguais" >
         <ng-template pTemplate="header">
             <tr>
+                <th></th>
                 <th>Data</th>
                 <th>Hora</th>
                 <th>Campeonato</th>
@@ -59,19 +57,22 @@
         </ng-template>
         <ng-template pTemplate="body" let-jogo >
             <tr>
+                <td >
+                    <p-checkbox [binary]="true" [(ngModel)]="jogo.selecionado" [inputId]="'binary'"/>
+                </td>
                 <td>{{jogo.data_jogo}}</td>
                 <td>{{jogo.hora}}</td>
                 <td>{{jogo.campeonato}}</td>
                 <td>{{jogo.campeonato}}</td>
                 <td>{{jogo.mandante}} x {{jogo.visitante}}</td>
-                <td>{{jogo.local}}</td>
+                <td>{{jogo.local.nome_local}}</td>
                 <td><p-tag [value]="jogo.organizacao" [severity]="getSeverity(jogo.organizacao)" /></td>
             </tr>
         </ng-template>
     </p-table>
     <div class="">
-        <p-button label="Cancel" severity="secondary" (click)="desmarcaJogo()" />
-        <p-button label="Save" (click)="confirmaJogo()" />
+        <p-button label="Cancel" (onClick)="salvarJogosDatasIguais()" severity="secondary" />
+        <p-button label="Save" (onClick)="salvarJogosDatasIguais()" />
     </div>
 </p-dialog>
 
@@ -84,11 +85,10 @@
 
 </p-dialog>
 
-<p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible2" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-5">Update your information.</span>
+<p-dialog header="Edit Profile" [closable]="false" [modal]="true" [(visible)]="visible2" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-5">Deseja abandonar sua participação neste jogo ?</span>
     <div class="flex align-items-center gap-3 mb-5">
-        <p-button label="Cancel" severity="secondary" (click)="visible = false" />
-        <p-button label="Save" (click)="desmarcaJogo()" />
+        <p-button label="Cancelar" severity="secondary" (click)="visible2 = false" />
+        <p-button label="Abandonar Jogo" (onClick)="abandonarJogo()" />
     </div>
-
 </p-dialog>

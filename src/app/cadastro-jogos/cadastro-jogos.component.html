@@ -1,72 +1,88 @@
 <div class="container">
   <h5>Cadastro de Jogos</h5>
+  <p-button label="PRINTAR OBJETO" (onClick)="c1()"></p-button>
 
-  <div class="grid p-fluid">
-    <div style="display: flex;">
-      <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="date" pInputText placeholder="Data" (input)="formatDate($event)">
+  <p-card *ngFor="let jogo of cadastroJogosDatasIguais; let i = index" class="card">
+    <div class="grid p-fluid">
+      <div style="display: flex;">
+        <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <p-calendar [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" dateFormat="dd/mm/yy"
+              [(ngModel)]="jogo.data_jogo"/>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
+          <div class="p-inputgroup">
+            <p-calendar [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay"[(ngModel)]="jogo.hora" >
+              <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+                <i class="pi pi-clock pointer-events-none" (click)="clickCallBack($event)"></i>
+              </ng-template>
+            </p-calendar>
+          </div>
+          <div *ngIf="showErrorEmailMessage">
+            <small class="error-message" style="color: red;">'erro'</small>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Campeonato" [(ngModel)]="jogo.campeonato">
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Categoria" [(ngModel)]="jogo.categoria">
+          </div>
+        </div>
+
+        <div class="col-12 md:col-4" style="width: 20%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Organização" [(ngModel)]="jogo.organizacao">
+          </div>
         </div>
       </div>
 
-      <div class="col-12 md:col-4" style="width: 20%; margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Hora" [(ngModel)]="jogo.hora">
+      <div style="display: flex; margin-top: 1%;">
+        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Mandante" [(ngModel)]="jogo.mandante">
+          </div>
         </div>
-        <div *ngIf="showErrorEmailMessage">
-          <small class="error-message" style="color: red;">'erro'</small>
+        <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Visitante" [(ngModel)]="jogo.visitante">
+          </div>
         </div>
-      </div>
-
-      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Campeonato" [(ngModel)]="jogo.campeonato">
-        </div>
-      </div>
-
-      <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Categoria" [(ngModel)]="jogo.categoria">
-        </div>
-      </div>
-
-      <div class="col-12 md:col-4" style="width: 20%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Organização" [(ngModel)]="jogo.organizacao">
+        <div class="col-12 md:col-4" style="width: 40%;">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Local" [(ngModel)]="jogo.local">
+          </div>
         </div>
       </div>
     </div>
+    <div class="centered-div">
+      <div class="divSwitch">
+        <label class="labelSwitch">O jogo precisa de ARFOC</label>
+        <p-checkbox styleClass="switchTeste" [binary]="true" inputId="binary" [(ngModel)]="jogo.arfoc" />
 
-    <div style="display: flex; margin-top: 1%;">
-      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Mandante" [(ngModel)]="jogo.mandante">
-        </div>
       </div>
-      <div class="col-12 md:col-4" style="width: 30%;margin-right: 1%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Visitante" [(ngModel)]="jogo.visitante">
-        </div>
-      </div>
-      <div class="col-12 md:col-4" style="width: 40%;">
-        <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Local" [(ngModel)]="jogo.local">
-        </div>
-      </div>
+      <p-multiSelect [options]="vagasBHFoto" (onChange)="teste($event, i)" optionLabel="nome" placeholder="Selecionar Reserva de Vaga" />
     </div>
-  </div>
-  <div class="centered-div">
-    <div class="divSwitch">
-      <label class="labelSwitch">O jogo precisa de ARFOC</label>
-      <p-inputSwitch styleClass="switchTeste" [(ngModel)]="jogo.arfoc" />
+    <div style="display: flex;  justify-content: space-between">
+      <p-button *ngIf="i === cadastroJogosDatasIguais.length - 1" label="Adicionar Jogo em mesma Data e Local"
+        (onClick)="adicionarJogo()"></p-button>
+      <p-button *ngIf="i === cadastroJogosDatasIguais.length - 1" label="Cadastrar Jogo" (onClick)="onSubmit()" [disabled]="desabilitaBotao()"></p-button>
     </div>
-    <p-button label="Novo Jogo" (onClick)="onSubmit(jogo)"></p-button>
-  </div>
+  </p-card>
+
+  <br>
 
   <p-fileUpload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" accept=".csv"
     chooseLabel="Importar CSV" uploadLabel="Upload" cancelLabel="Cancelar" (onUpload)="onUpload($event)">
   </p-fileUpload>
-
+  <br>
   <p-table [value]="listaJogos" [tableStyle]="{'min-width': '60rem'}">
     <ng-template pTemplate="header">
       <tr>
@@ -88,8 +104,8 @@
         <td>{{jogo.campeonato}}</td>
         <td>{{jogo.categoria}}</td>
         <td>{{jogo.mandante}} x {{jogo.visitante}}</td>
-        <td>{{jogo.local}}</td>
-        <td><p-tag [value]="jogo.organizacao" [severity]="getSeverity(jogo.organizacao)"  /></td>
+        <td>{{jogo.local.nome_local}}</td>
+        <td><p-tag [value]="jogo.organizacao" [severity]="getSeverity(jogo.organizacao)" /></td>
         <td><p-button icon="pi pi-pencil" (onClick)="showModalEdit(rowIndex)"></p-button></td>
         <td><p-button icon="pi pi-trash" (onClick)="showModalDelete(jogo.id)"></p-button></td>
       </tr>
@@ -120,7 +136,8 @@
   </div>
 </p-dialog>
 
-<p-dialog (onHide)="closeModalEdit()" header="Edição de Jogo" [modal]="true" [(visible)]="visibleEditJogo" [style]="{ width: '60rem' }">
+<p-dialog (onHide)="closeModalEdit()" header="Edição de Jogo" [modal]="true" [(visible)]="visibleEditJogo"
+  [style]="{ width: '60rem' }">
   <div class="grid p-fluid">
     <div style="display: flex;">
       <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
@@ -170,7 +187,7 @@
       </div>
       <div class="col-12 md:col-4" style="width: 40%;">
         <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Local" [(ngModel)]="jogoEdit.local">
+          <input type="text" pInputText placeholder="Local" [(ngModel)]="jogoEdit.local.nome_local">
         </div>
       </div>
     </div>
@@ -180,6 +197,7 @@
       <label class="labelSwitch">O jogo precisa de ARFOC</label>
       <p-inputSwitch styleClass="switchTeste" [(ngModel)]="jogoEdit.arfoc" />
     </div>
-    <p-button label="Editar Jogo" ></p-button>
+    <p-multiSelect [options]="vagasBHFoto"  [(ngModel)]="vagasBHFotoSelecionadasEdit" appendTo="body" optionLabel="nome" placeholder="Selecionar Reserva de Vaga" />
+    <p-button label="Editar Jogo" (onClick)="editJogo()"></p-button>
   </div>
 </p-dialog>
