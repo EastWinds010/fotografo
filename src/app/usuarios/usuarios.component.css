@@ -1,0 +1,14 @@
+  h5{
+    font-size: 1.5rem;
+    color: rgb(97, 97, 97);
+  }
+  .centered-div {
+    display: flex;
+    justify-content: center;
+    margin-top: 2%;
+  }
+  
+  .error-input {
+    border-color: red !important;
+  }
+  

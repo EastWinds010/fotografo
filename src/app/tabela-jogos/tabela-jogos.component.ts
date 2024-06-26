@@ -8,16 +8,20 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { JogosService } from '../../services/jogos.service';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, forkJoin, tap  } from 'rxjs';
 import { WebSocketService } from '../../services/websocket.service';
-
+import { DatePipe } from '@angular/common';
+import { LoginService } from '../../services/login.service';
+import { Router } from '@angular/router';
+import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
-  selector: 'app-tabela-jogos',
-  standalone: true,
-  imports: [TableModule, ButtonModule, CommonModule, RatingModule, TagModule, CheckboxModule, FormsModule, DialogModule],
-  templateUrl: './tabela-jogos.component.html',
-  styleUrl: './tabela-jogos.component.css'
+    selector: 'app-tabela-jogos',
+    standalone: true,
+    providers: [DatePipe],
+    templateUrl: './tabela-jogos.component.html',
+    styleUrl: './tabela-jogos.component.css',
+    imports: [TableModule, ButtonModule, CommonModule, RatingModule, TagModule, CheckboxModule, FormsModule, DialogModule, LoadingComponent]
 })
 
 
@@ -37,9 +41,13 @@ Lógica
 */
 export class TabelaJogosComponent implements OnInit {
   private messageSubscription!: Subscription;
+
   constructor(
     private jogosService: JogosService,
-    private webSocketService: WebSocketService
+    private loginService: LoginService,
+    private webSocketService: WebSocketService,
+    private datePipe: DatePipe,
+    private router: Router
   ) {
 
 
@@ -56,38 +64,87 @@ export class TabelaJogosComponent implements OnInit {
   travaJ: boolean = false;
   idUser: number = -1;
   jogosAlterados: any = [];
+  refreshToken: string = '';
+  isLoading: boolean = false;
   ngOnInit(): void {
+    this.isLoading = true;
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    const tasks: Observable<any>[] = [];
+
+    if (refreshToken != null) {
+      this.refreshToken = refreshToken;
+
+      const body = {
+        refreshToken: this.refreshToken
+      };
+
+      const tokenTask = this.loginService.token(body).pipe(
+        tap((data) => {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('refreshToken', data.refreshToken);
+        })
+      );
+      tasks.push(tokenTask);
+    }
+
     this.messageSubscription = this.webSocketService.getMessages().subscribe({
       next: (message) => {
-      this.handleMessage(message);
+        this.handleMessage(message);
       },
       error: (error) => {
         console.error('WebSocket error:', error);
       }
     });
-    this.idUser = parseInt(localStorage.getItem('idFotografo')!);
 
-    this.jogosService.listaJogos().subscribe({
-      next: (response) => {
-        this.listaJogos = response.result;
-        this.listaJogos.map((jogo: { myGame: boolean; travado: boolean}) => {
-          jogo.myGame = this.verificaMyGame(jogo);
-          jogo.travado = this.verificaTrava(jogo);
-          return jogo;
-        });
-        console.log(this.listaJogos);
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    })
-  };
+    this.idUser = parseInt(localStorage.getItem('idFotografo')!, 10);
+
+    if (refreshToken != null) {
+      const jogosTask = this.jogosService.listaJogos(this.refreshToken).pipe(
+        tap((response) => {
+          this.listaJogos = response.result;
+          this.listaJogos.map((jogo: { myGame: boolean; travado: boolean }) => {
+            jogo.myGame = this.verificaMyGame(jogo);
+            jogo.travado = this.verificaTrava(jogo);
+            return jogo;
+          });
+        })
+      );
+      tasks.push(jogosTask);
+    }
+
+    if (tasks.length > 0) {
+      forkJoin(tasks).subscribe({
+        next: () => {
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error(error);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  formatarData(data: string) {
+    if (!data || data === 'Invalid Date') {
+      return ''; // ou outra ação, dependendo do comportamento desejado
+    }
+    const dataObj = new Date(data);
+    if (isNaN(dataObj.getTime())) {
+      return ''; // ou outra ação, dependendo do comportamento desejado
+    }
+    return this.datePipe.transform(dataObj, 'EEEE, dd \'de\' MMMM \'de\' yyyy');
+  }
+
 
   verificaTrava(jogo: any): boolean {
-    if(jogo.myGame){
+    if (jogo.myGame) {
       return false;
     }
-    if(jogo.status == 3 || jogo.status == 5 || jogo.status == 6 || jogo.status == 1 ){
+    if (jogo.status == 3 || jogo.status == 5 || jogo.status == 6 || jogo.status == 1) {
       return true;
     }
     return false;
@@ -95,37 +152,46 @@ export class TabelaJogosComponent implements OnInit {
   verificaMyGame(jogo: any): boolean {
     for (let i = 0; i < jogo.fotografos.length; i++) {
       const idFotografo = jogo.fotografos[i].id_fotografo;
-      if(idFotografo == this.idUser){
+      if (idFotografo == this.idUser) {
         return true;
       }
     }
     return false;
   }
   selecionaJogo(event: any, rowIndex: number) {
+    this.isLoading = true;
     if (event.checked) {
       this.idJogo = this.listaJogos[rowIndex].id;
       const idLocal = this.listaJogos[rowIndex].local.id_local;
-      this.jogosService.listaJogosLocal(idLocal).subscribe({
+      this.jogosService.listaJogosLocal(idLocal, this.refreshToken).subscribe({
         next: (response) => {
           this.jogosDatasIguais = response.result;
-          this.jogosDatasIguais.map((jogo: { selecionado: boolean; }) =>{
+          this.jogosDatasIguais.map((jogo: { selecionado: boolean; }) => {
             jogo.selecionado = false;
             return jogo;
           })
           const statusJogos: { id: any; status: number; }[] = []
           this.jogosDatasIguais.forEach((jogo: any) => {
-            if(this.idJogo == jogo.id){
+            if (this.idJogo == jogo.id) {
               jogo.selecionado = true;
-            }else{
+            } else {
               jogo.selecionado = false;
             }
             statusJogos.push({
               id: jogo.id,
               status: 3
             });
+            for (let i = 0; i < jogo.fotografos.length; i++) {
+              const idFotografo = jogo.fotografos[i].id_fotografo;
+              if (idFotografo == this.idUser) {
+                jogo.selecionado = true;
+              }
+            }
           });
-          this.jogosService.alterarStatusJogoDatasIguais(statusJogos).subscribe({
+
+          this.jogosService.alterarStatusJogoDatasIguais(statusJogos, this.refreshToken).subscribe({
             next: (response) => {
+              this.isLoading = false;
               this.visible = true;
             },
             error: (error) => {
@@ -139,60 +205,76 @@ export class TabelaJogosComponent implements OnInit {
       });
     } else {
       this.idJogo = this.listaJogos[rowIndex].id;
+      this.isLoading = false;
       this.visible2 = true;
     }
   };
 
-  abandonarJogo(){
+  abandonarJogo() {
+    this.isLoading = true;
     const statusJogo = {
       status: 2,
       idJogo: this.idJogo,
       idFotografo: this.idUser
     }
-    this.jogosService.abandonarJogo(statusJogo).subscribe({
+    this.jogosService.abandonarJogo(statusJogo, this.refreshToken).subscribe({
       next: (response) => {
-        console.log(response);
+        this.isLoading = false;
         this.visible2 = false;
       },
       error: (error) => {
+        this.isLoading = false;
         console.log(error);
       }
     });
 
   }
-  salvarJogosDatasIguais(){
-
+  salvarJogosDatasIguais() {
+    this.isLoading = true;
     for (let index = 0; index < this.jogosDatasIguais.length; index++) {
       const jogo = this.jogosDatasIguais[index];
-
-      if(jogo.selecionado){
+      console.log(jogo);
+      if (jogo.selecionado) {
         const dadosJogos = {
           fotografoId: this.idUser,
           jogoId: jogo.id
         }
-        this.jogosService.vincularFotografo(dadosJogos).subscribe({
+        this.jogosService.vincularFotografo(dadosJogos, this.refreshToken).subscribe({
           next: (response) => {
           },
           error: (error) => {
             console.log(error);
           }
         });
-      } else{
+      } else {
         const dadosStatus = {
           id: jogo.id,
           status: 2
         }
-        this.jogosService.alterarStatusJogoDatasIguais([dadosStatus]).subscribe({
+        this.jogosService.alterarStatusJogoDatasIguais([dadosStatus], this.refreshToken).subscribe({
           next: (response) => {
-            console.log(response);
+            const statusJogo = {
+              status: 2,
+              idJogo: jogo.id,
+              idFotografo: this.idUser
+            }
+            this.jogosService.abandonarJogo(statusJogo, this.refreshToken).subscribe({
+              next: (response) => {
+                this.visible2 = false;
+              },
+              error: (error) => {
+                console.log(error);
+              }
+            });
           },
           error: (error) => {
             console.log(error);
           }
         });
       }
-      
+
     }
+    this.isLoading = false;
     this.visible = false;
 
   }
@@ -203,15 +285,20 @@ export class TabelaJogosComponent implements OnInit {
     reader.onload = () => {
       try {
         const jsonText = reader.result as string; // Converte o resultado do FileReader em texto
-        const json = JSON.parse(jsonText); 
-        console.log(json);
+        const json = JSON.parse(jsonText);
         this.jogosAlterados = json;
-        this.jogosAlterados.map((jogo: { myGame: boolean; travado: boolean}) => {
+        this.jogosAlterados.map((jogo: { myGame: boolean; travado: boolean }) => {
           jogo.myGame = this.verificaMyGame(jogo);
           jogo.travado = this.verificaTrava(jogo);
           return jogo;
         });
         this.listaJogos = this.substituirObjetos(this.listaJogos, this.jogosAlterados);
+
+        this.listaJogos.map((jogo: { myGame: boolean; travado: boolean }) => {
+          jogo.myGame = this.verificaMyGame(jogo);
+          jogo.travado = this.verificaTrava(jogo);
+          return jogo;
+        });
         console.log(this.listaJogos);
       } catch (e) {
         console.error('Error parsing JSON:', e);
@@ -222,8 +309,8 @@ export class TabelaJogosComponent implements OnInit {
     };
     reader.readAsText(blob); // Converte o Blob em texto
   }
-  
-  
+
+
 
   getSeverity(status: string) {
     switch (status) {
@@ -244,5 +331,5 @@ export class TabelaJogosComponent implements OnInit {
 
     // Itera sobre o array original e substitui os objetos que têm o mesmo id
     return originais.map(original => novosMap.get(original.id) || original);
-}
+  }
 }

@@ -6,20 +6,28 @@ import { Observable, take } from 'rxjs';
   providedIn: 'root'
 })
 export class CadastroService {
-  baseUrlLocal: string = 'http://localhost:3307/api';
-  baseUrl: string = 'https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api';
+  // baseUrlLocal: string = 'http://localhost:3307/api';
+  baseUrlLocal: string = 'https://158.69.156.104:3307/api';
   constructor(private http: HttpClient) {
   }
-  public createUser(user: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(`${this.baseUrlLocal}/users`, user).pipe(take(1));
+  public createUser(user: any, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer '  + token
+    });
+    
+    const options = { headers: headers };
+
+    return this.http.post(`${this.baseUrlLocal}/users`, user, options).pipe(take(1));
   };
 
   public checkCpf(cpf: string): Observable<any> {
+
+
     return this.http.post(`${this.baseUrlLocal}/checkCPF`, {cpf}).pipe(take(1));
   };
 
-  public checkEmail(email: string): Observable<any> {
+  public checkEmail(email: string,): Observable<any> {
     return this.http.post(`${this.baseUrlLocal}/checkEmail`, {email}).pipe(take(1));
   }
 }

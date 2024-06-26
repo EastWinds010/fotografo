@@ -13,13 +13,15 @@
 
 .cardLogin {
     background-color: white;
-    height: 50%;
-    width: 25%;
+    min-height: 50vh; /* Use min-height em vez de height */
+    width: 40vh; /* Aumente a largura para acomodar melhor o conteúdo */
+    padding: 2rem; /* Adicione padding para criar espaço interno */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     border-radius: 1.5%;
+    box-sizing: border-box; /* Inclua padding na largura e altura */
 }
 
 #subtitulo {
@@ -28,7 +30,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 2rem 0 2rem;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    width: 100%; /* Garante que o elemento ocupe toda a largura disponível */
 }
 
 #titulo {

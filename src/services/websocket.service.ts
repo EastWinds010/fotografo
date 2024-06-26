@@ -13,7 +13,7 @@ export class WebSocketService {
   }
 
   connect() {
-    this.socket = new WebSocket('ws://localhost:3000');
+    this.socket = new WebSocket('wss://158.69.156.104:3000');
 
     this.socket.onmessage = (event) => {
       this.messageSubject.next(event.data);

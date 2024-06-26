@@ -2,81 +2,159 @@
 <p-table [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
         <tr>
-            <th>Code</th>
-            <th>E-mail</th>
             <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>ARFOC</th>
+            <th></th>
+            <th></th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product let-i="index">
         <tr>
-            <td>{{ product.id }}</td>
-            <td>{{ product.email }}</td>
             <td>{{ product.nome }}</td>
-            <td><p-button icon="pi pi-user-edit" (onClick)="showDialog(product.id, 'edit')"></p-button></td>
-            <td><p-button icon="pi pi-trash" (onClick)="showDialog(product.id, 'delete')"></p-button></td>
+            <td>{{ product.email }}</td>
+            <td>{{ product.phone[0] }}</td>
+            <td>{{ product.arfoc == null ? 'Não Possui': product.arfoc }}</td>
+            <td><p-button icon="pi pi-user-edit" (onClick)="showDialog(product.id_user, 'edit')"></p-button></td>
+            <td><p-button icon="pi pi-trash" (onClick)="showDialog(product.id_user, 'delete')"></p-button></td>
         </tr>
     </ng-template>
 </p-table>
 
+<p-dialog header="Edit Profile" [closable]="false" [modal]="true" [(visible)]="visibleDelete" [style]="{ width: '25rem' }">
+  <span class="p-text-secondary block mb-5">Deseja Excluir o usuário ? (Essa ação não pode ser desfeita)</span>
+  <div class="flex align-items-center gap-3 mb-5">
+      <p-button label="Cancelar" severity="secondary" (click)="visibleDelete = false" />
+      <p-button label="Excluir Usuário" (onClick)="deleteUser()" />
+  </div>
+</p-dialog>
+
 <div class="card flex justify-content-center">
-    <p-dialog header="Header" [(visible)]="visibleDelete" [modal]="true" [style]="{ width: '50rem' }"
-        [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-        <ng-template pTemplate="header">
-            <div class="inline-flex align-items-center justify-content-center gap-2">
-                <span class="font-bold white-space-nowrap">Excluir Usuário</span>
-            </div>
-        </ng-template>
-        <div class="card flex justify-content-center">
-            <p-dialog header="Header" [(visible)]="visibleDelete" [modal]="true" [style]="{ width: '50rem' }"
-                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-                <ng-template pTemplate="header">
-                    <div class="inline-flex align-items-center justify-content-center gap-2">
-                        <span class="font-bold white-space-nowrap">Excluir Usuário</span>
-                    </div>
-                </ng-template>
-                <p class="m-0">
-                    Você tem certeza que deseja excluir o usuário?
-                </p>
-                <ng-template pTemplate="footer">
-                    <p-button (onClick)="deleteUser()" label="Excluir" pAutoFocus [autofocus]="true"></p-button>
-                    <p-button (click)="visibleDelete = false" label="Cancelar" pAutoFocus [autofocus]="true"></p-button>
-                </ng-template>
-            </p-dialog>
-        </div>
-        <ng-template pTemplate="footer">
-            <p-button (onClick)="deleteUser()" label="Excluir" pAutoFocus [autofocus]="true"></p-button>
-            <p-button (click)="visibleDelete = false" label="Cancelar" pAutoFocus [autofocus]="true"></p-button>
-        </ng-template>
-    </p-dialog>
-</div>
-<div class="card flex justify-content-center">
-    <p-dialog header="Header" [(visible)]="visibleEdit" [modal]="true" [style]="{ width: '50rem' }"
+    <p-dialog header="Edição de Usuário" [(visible)]="visibleEdit" [modal]="true" [style]="{ width: '50rem' }"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-    <ng-template pTemplate="header">
-        <div class="inline-flex align-items-center justify-content-center gap-2">
-            <span class="font-bold white-space-nowrap">Editar Usuário</span>
+    <div class="container">
+        <h5>Dados do Usuário</h5>
+        <div class="grid p-fluid">
+          <div style="display: flex;">
+            <div class="col-12 md:col-4" style="width: 40%;margin-right: 1%;">
+              <div class="p-inputgroup">
+                <input type="text" pInputText placeholder="Nome Completo" [(ngModel)]="user.nome" >
+              </div>
+            </div>
+      
+            <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
+              <div class="p-inputgroup" >
+                <input type="email" pInputText placeholder="E-Mail" [(ngModel)]="user.email" >
+              </div>
+              <!-- <div *ngIf="showErrorEmailMessage">
+                <small class="error-message" style="color: red;">{{mensageEmail}}</small>
+              </div> -->
+            </div>
+            
+      
+            <div class="col-12 md:col-4" style="width: 30%;">
+              <div class="p-inputgroup">
+                <input type="number" pInputText placeholder="AFORC" [(ngModel)]="user.arfoc">
+              </div>
+            </div>
+          </div>
+      
+          <div style="display: flex; margin-top: 1%;">
+            <div class="col-12 md:col-4" style="width: 50%;margin-right: 1%;">
+              <div class="p-inputgroup">
+                <input type="tel" mask="000.000.000-00" pInputText placeholder="CPF" [(ngModel)]="user.cpf">
+              </div>
+              <!-- <div *ngIf="showErrorCpfMessage">
+                <small class="error-message" style="color: red;">{{mensageCpf}}</small>
+              </div> -->
+            </div>
+            <div class="col-12 md:col-4" style="width: 50%;margin-right: 1%;">
+              <div class="p-inputgroup">
+                <input type="text" mask="AA-00.000.000" pInputText placeholder="RG" [(ngModel)]="user.rg">
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 50%;">
+              <p-dropdown [options]="cities" [(ngModel)]="selectedCity" optionLabel="name"
+                placeholder="Selecione o Tipo de Usuário" />
+            </div>
+          </div>
         </div>
-    </ng-template>
-    <form [formGroup]="form"class="formulario">
-        <span class="p-float-label">
-          <input id="name" type="text" pInputText formControlName="name" />
-          <label for="name">Name</label>
-        </span>
-        <br>
-        <span class="p-float-label">
-          <input id="email" type="text" pInputText formControlName="email" />
-          <label for="email">Email</label>
-        </span>
-        <br>
-        <span class="p-float-label">
-          <input id="password" type="password" pInputText formControlName="password" />
-          <label for="password">Password</label>
-        </span>
-      </form>
-    <ng-template pTemplate="footer">
-        <p-button (onClick)="editUser()" label="EditarUsuário" pAutoFocus [autofocus]="true"></p-button>
-        <p-button  (click)="visibleEdit = false" label="Cancelar" pAutoFocus [autofocus]="true"></p-button>
-    </ng-template>
+        <h5>Endereço</h5>
+        <div class="grid p-fluid">
+          <div style="display: flex;">
+            <div class="col-12 md:col-4" style="width: 35%;margin-right: 1%;">
+              <div class="p-inputgroup">
+                <input type="text" pInputText placeholder="Rua" [(ngModel)]="user.endereco[0].logradouro" >
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 15%;margin-right: 1%;">
+              <div class="p-inputgroup">
+                <input type="tel" pInputText placeholder="Número" [(ngModel)]="user.endereco[0].numero">
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 25%;margin-right: 1%;">
+              <div class="p-inputgroup">
+      
+                <input type="text" pInputText placeholder="Bairro" [(ngModel)]="user.endereco[0].bairro">
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 25%;">
+              <div class="p-inputgroup">
+      
+                <input type="text" pInputText placeholder="Cidade" [(ngModel)]="user.endereco[0].cidade" >
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; margin-top: 1%;">
+            <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+              <div class="p-inputgroup">
+      
+                <input type="text" pInputText placeholder="Estado"[(ngModel)]="user.endereco[0].estado" >
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+              <div class="p-inputgroup">
+      
+                <input type="text" pInputText placeholder="País"[(ngModel)]="user.endereco[0].pais" >
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
+              <div class="p-inputgroup">
+      
+                <input type="tel" mask="00.000-000" pInputText placeholder="CEP"[(ngModel)]="user.endereco[0].cep" >
+              </div>
+            </div>
+            <div class="col-12 md:col-4" style="width: 40%;">
+              <div class="p-inputgroup">
+      
+                <input type="text" pInputText placeholder="Complemento" [(ngModel)]="user.endereco[0].complemento">
+              </div>
+            </div>
+          </div>
+        </div>
+        <h5>Telefone de Contato</h5>
+        <div class="grid p-fluid">
+          <div style="display: flex;">
+      
+              <div class="p-inputgroup">
+                <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" style="width: 35%;margin-right: 1%;" [(ngModel)]="phone1">
+              </div>
+              <div class="p-inputgroup">
+                <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" style="width: 35%;margin-right: 1%;" [(ngModel)]="phone2">
+              </div>
+              <div class="p-inputgroup">
+                <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" style="width: 35%;margin-right: 1%;" [(ngModel)]="phone3">
+              </div>
+          </div>
+        </div>
+        <div class="centered-div">
+          <p-button label="Editar Usuário" (onClick)="editUser()"></p-button>
+        </div>
+      </div>
 </p-dialog>
 </div>
 
+<div *ngIf="isLoading">
+  <app-loading></app-loading>
+</div>

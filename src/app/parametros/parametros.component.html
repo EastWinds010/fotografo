@@ -1,0 +1,55 @@
+<div class="container">
+  <h5>Parametros do Sistema</h5>
+  <h3>Dias para Liberação de Jogos</h3>
+  <div class="grid p-fluid">
+    <div class="card flex justify-content-center">
+      <p-selectButton [options]="weekDays" [(ngModel)]="diasDeLiberacao" [multiple]="true" optionLabel="name"
+        optionValue="value" (onChange)="print($event)">
+      </p-selectButton>
+    </div>
+  </div>
+  <h3>Horários de Liberação</h3>
+  <div class="grid p-fluid">
+    <div class="card flex justify-content-center input-container">
+      <div *ngFor="let dias of weekDays;let i = index">
+        <p-panel *ngIf="dias.selected" header="{{dias.name}}">
+          <p-calendar [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true" inputId="templatedisplay"[(ngModel)]="dias.hora" >
+            <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+              <i class="pi pi-clock pointer-events-none"></i>
+            </ng-template>
+          </p-calendar>
+        </p-panel>
+      </div>
+      <div>
+      </div>
+    </div>
+    <!-- <h5>Telefone de Contato</h5>
+    <div class="grid p-fluid">
+      <div style="display: flex;">
+
+        <div class="p-inputgroup">
+          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000"
+            style="width: 35%;margin-right: 1%;">
+        </div>
+        <div class="p-inputgroup">
+          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000"
+            style="width: 35%;margin-right: 1%;">
+        </div>
+        <div class="p-inputgroup">
+          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000"
+            style="width: 35%;margin-right: 1%;">
+        </div>
+      </div>
+    </div>
+    <div class="centered-div">
+      <p-button label="Cadastrar novo Usuário" (onClick)="printObjeto()"></p-button>
+    </div> -->
+  </div>
+  <!--   
+  <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '50rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    <p class="m-0 inline-flex align-items-center justify-content-center">{{mensage}}
+    </p>
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-check" (click)="visible = false" label="Ok" pAutoFocus [autofocus]="true"></p-button>
+    </ng-template> --> 

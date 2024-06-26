@@ -1,0 +1,33 @@
+.container {
+    width: 70%;
+    margin: 0 auto;
+  
+  }
+  
+  h5{
+    font-size: 1.5rem;
+    color: rgb(97, 97, 97);
+  }
+  h3{
+    font-size: 1.3rem;
+    color: rgb(97, 97, 97);
+  }
+  .centered-div {
+    justify-content: center;
+    margin-top: 2%;
+  }
+  
+  .error-input {
+    border-color: red !important;
+  }
+  
+  .input-container {
+    display: flex;
+    gap: 0.2rem; /* Espaçamento entre os itens */
+  }
+  
+  .input-item {
+    flex: 1; /* Permite que os itens cresçam igualmente */
+    margin: 0.2rem; /* Espaçamento interno para cada item */
+  }
+  

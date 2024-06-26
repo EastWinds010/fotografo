@@ -8,6 +8,8 @@ import { PasswordModule } from 'primeng/password';
 import { CommonModule } from '@angular/common';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { ResetPasswordService } from '../../services/reset-password.service';
+import { DialogModule } from 'primeng/dialog';
+import { LoadingComponent } from "../loading/loading.component";
 interface Credential {
   email: string;
   cpf: string;
@@ -15,9 +17,9 @@ interface Credential {
 @Component({
   selector: 'app-reset-de-senha',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, ButtonModule, FormsModule, ReactiveFormsModule, InputTextModule, PasswordModule, NgxMaskDirective, NgxMaskPipe],
   templateUrl: './reset-de-senha.component.html',
-  styleUrl: './reset-de-senha.component.css'
+  styleUrl: './reset-de-senha.component.css',
+  imports: [DialogModule, RouterOutlet, CommonModule, ButtonModule, FormsModule, ReactiveFormsModule, InputTextModule, PasswordModule, NgxMaskDirective, NgxMaskPipe, LoadingComponent]
 })
 
 
@@ -33,7 +35,12 @@ export class ResetDeSenhaComponent {
   };
   password: string = '';
   passwordConfirm: string = '';
-  constructor(private resetPasswordService: ResetPasswordService) { }
+  visible: boolean = false;
+  isLoading: boolean = false;
+  mensagem: string = '';
+  constructor(private resetPasswordService: ResetPasswordService,
+    private router: Router
+  ) { }
   checkEmail() {
     let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
     if (emailPattern.test(this.email)) {
@@ -50,6 +57,7 @@ export class ResetDeSenhaComponent {
     }
   }
   checkCredentials() {
+    this.isLoading = true;
     this.credentials.email = this.email;
     this.credentials.cpf = this.cpf;
     this.resetPasswordService.verifyCredentials(this.credentials).subscribe({
@@ -58,10 +66,14 @@ export class ResetDeSenhaComponent {
         switch (code) {
           case 401:
             console.log('Credenciais inválidas!');
+            this.mensagem = 'Credenciais inválidas!';
+            this.isLoading = false;
+            this.visible = true;
             break;
           case 402:
             console.log('Senha já definida!');
             this.resetSenha = false;
+            this.isLoading = false;
             localStorage.setItem('id', response.id);
             break;
           case 200:
@@ -69,7 +81,7 @@ export class ResetDeSenhaComponent {
             this.resetSenha = false;
             console.log(response.id);
             localStorage.setItem('id', response.id);
-            break; localStorage
+            break;
           default:
             break;
         }
@@ -81,6 +93,7 @@ export class ResetDeSenhaComponent {
   };
 
   alterPassword() {
+    this.isLoading = true;
     const id = localStorage.getItem('id');
     const credentials = {
       id: id,
@@ -88,9 +101,11 @@ export class ResetDeSenhaComponent {
     };
     this.resetPasswordService.resetPassword(credentials).subscribe({
       next: (response) => {
-        console.log(response);
+        this.isLoading = false;
+        this.visible = true;
       },
       error: (error) => {
+        this.isLoading = false;
         console.log(error);
       }
     });
@@ -129,5 +144,9 @@ export class ResetDeSenhaComponent {
     if (rev != parseInt(cpf.charAt(10))) return false;
 
     return true;
+  }
+  onLogin() {
+    this.visible = false;
+    this.router.navigate(['/login']);
   }
 }

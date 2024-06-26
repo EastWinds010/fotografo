@@ -1,7 +1,5 @@
 <div class="container">
   <h5>Cadastro de Jogos</h5>
-  <p-button label="PRINTAR OBJETO" (onClick)="c1()"></p-button>
-
   <p-card *ngFor="let jogo of cadastroJogosDatasIguais; let i = index" class="card">
     <div class="grid p-fluid">
       <div style="display: flex;">
@@ -73,7 +71,8 @@
     <div style="display: flex;  justify-content: space-between">
       <p-button *ngIf="i === cadastroJogosDatasIguais.length - 1" label="Adicionar Jogo em mesma Data e Local"
         (onClick)="adicionarJogo()"></p-button>
-      <p-button *ngIf="i === cadastroJogosDatasIguais.length - 1" label="Cadastrar Jogo" (onClick)="onSubmit()" [disabled]="desabilitaBotao()"></p-button>
+        <p-button *ngIf="i !== 0" label="Remover Jogo" severity="danger"></p-button>
+      <p-button *ngIf="i === cadastroJogosDatasIguais.length - 1" label="Cadastrar Jogo" (onClick)="onSubmit()" [disabled]="desabilitaBotao()" severity="success"></p-button>
     </div>
   </p-card>
 

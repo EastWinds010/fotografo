@@ -20,9 +20,10 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
-        <tr [ngClass]="{'desativado': product.travado}" >
-            <td >
-                <p-checkbox [binary]="true" [(ngModel)]="product.myGame" (onChange)="selecionaJogo($event, rowIndex)" inputId="binary"/>
+        <tr [ngClass]="{'desativado': product.travado}">
+            <td>
+                <p-checkbox [binary]="true" [(ngModel)]="product.myGame" (onChange)="selecionaJogo($event, rowIndex)"
+                    inputId="binary" />
             </td>
             <td>{{product.data_jogo}}</td>
             <td>{{product.hora}}</td>
@@ -38,11 +39,11 @@
     </ng-template>
 </p-table>
 
-<p-dialog header="Deseja confirmar presentaça para o(os) jogo(s) selecionado(s) ?" [(visible)]="visible" [modal]="true" [closable]="false"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '70vw' }" [draggable]="false"
-    [resizable]="false">
+<p-dialog header="Deseja confirmar presentaça para o(os) jogo(s) selecionado(s) ?" [(visible)]="visible" [modal]="true"
+    [closable]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '70vw' }"
+    [draggable]="false" [resizable]="false">
     <span class="p-text-secondary block mb-5">Deseja confirmar presentaça para o jogo selecionado ?</span>
-    <p-table [value]="jogosDatasIguais" >
+    <p-table [value]="jogosDatasIguais">
         <ng-template pTemplate="header">
             <tr>
                 <th></th>
@@ -55,12 +56,12 @@
                 <th>Organização</th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-jogo >
+        <ng-template pTemplate="body" let-jogo>
             <tr>
-                <td >
-                    <p-checkbox [binary]="true" [(ngModel)]="jogo.selecionado" [inputId]="'binary'"/>
+                <td>
+                    <p-checkbox [binary]="true" [(ngModel)]="jogo.selecionado" [inputId]="'binary'" />
                 </td>
-                <td>{{jogo.data_jogo}}</td>
+                <td>{{formatarData(jogo.data_jogo)}}</td>
                 <td>{{jogo.hora}}</td>
                 <td>{{jogo.campeonato}}</td>
                 <td>{{jogo.campeonato}}</td>
@@ -92,3 +93,7 @@
         <p-button label="Abandonar Jogo" (onClick)="abandonarJogo()" />
     </div>
 </p-dialog>
+
+<div *ngIf="isLoading">
+    <app-loading></app-loading>
+</div>

@@ -27,6 +27,8 @@ import { PanelModule } from 'primeng/panel';
 import { CalendarModule } from 'primeng/calendar';
 import { CadastroService } from '../../services/cadastro.service';
 import { enableDebugTools } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { LoginService } from '../../services/login.service';
 
 interface Jogos {
   data_jogo: string;
@@ -55,8 +57,11 @@ interface VagasBHFoto {
 })
 export class CadastroJogosComponent implements OnInit {
 
+
   constructor(
     private jogosService: JogosService,
+    private router: Router,
+    private loginService: LoginService,
   ) { }
   disabled: boolean = true;
   porcentagemJogosEnviados: number = 0;
@@ -110,27 +115,42 @@ export class CadastroJogosComponent implements OnInit {
   vagasBHFoto!: VagasBHFoto[];
   vagasBHFotoSelecionadas: VagasBHFoto[] = [];
   vagasBHFotoSelecionadasEdit: VagasBHFoto[] = [];
+  refreshToken: string = '';
 
   ngOnInit() {
-    this.vagasBHFoto = [
-      { nome: 'Eduardo Macedo', id: 1},
-      { nome: 'Douglas Patricio', id: 2},
-      { nome: 'Gledston Tavares', id: 3},
-      { nome: 'Gustavo Rabelo', id: 4},
-      {nome: 'Vaga BH Foto', id: 5}
+    if (localStorage.getItem('refreshToken') != null) {
+      this.refreshToken = localStorage.getItem('refreshToken')!;
 
-    ]
-    this.jogosService.listaJogos().subscribe(
-      {
+      const body = {
+        refreshToken: this.refreshToken
+      };
+      this.loginService.token(body).subscribe({
         next: (data) => {
-          console.log(data.result)
-          this.listaJogos = data.result;
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('refreshToken', data.refreshToken);
+          this.jogosService.listaJogos(this.refreshToken).subscribe(
+            {
+              next: (data) => {
+                console.log(data.result)
+                this.listaJogos = data.result;
+              },
+              error: (error) => {
+                console.log(error);
+              }
+            }
+          );
         },
-        error: (error) => {
-          console.log(error);
-        }
-      }
-    );
+        error: (err) => {
+          console.error(err.status);
+          if (err.status === 401) {
+            localStorage.clear();
+            this.router.navigate(['/login']);
+          }
+        },
+
+      })
+    }
+
 
   };
 
@@ -166,7 +186,7 @@ export class CadastroJogosComponent implements OnInit {
       element.data_jogo = formattedDate;
     }
     if (this.cadastroJogosDatasIguais.length == 1) {
-      this.jogosService.insereJogo(this.cadastroJogosDatasIguais[0]).subscribe({
+      this.jogosService.insereJogo(this.cadastroJogosDatasIguais[0], this.refreshToken).subscribe({
         next: (data) => {
           console.log(data);
         },
@@ -177,7 +197,7 @@ export class CadastroJogosComponent implements OnInit {
       console.log('um jogo')
     } else {
       console.log('mais de um jogo')
-      this.jogosService.insereJogoDatasIguais(this.cadastroJogosDatasIguais).subscribe({
+      this.jogosService.insereJogoDatasIguais(this.cadastroJogosDatasIguais, this.refreshToken).subscribe({
         next: (data) => {
           console.log(data);
         },
@@ -242,7 +262,7 @@ export class CadastroJogosComponent implements OnInit {
   };
 
   deletaJogo() {
-    this.jogosService.deletaJogo(this.idDelete).subscribe(
+    this.jogosService.deletaJogo(this.idDelete, this.refreshToken).subscribe(
       {
         next: (data) => {
           console.log(data);
@@ -277,7 +297,7 @@ export class CadastroJogosComponent implements OnInit {
             arfoc: element[7] === 'sim' ? true : false,
             organizacao: element[8]
           };
-          this.jogosService.insereJogo(jogo).subscribe({
+          this.jogosService.insereJogo(jogo, this.refreshToken).subscribe({
             next: (data) => {
               console.log(data);
             },

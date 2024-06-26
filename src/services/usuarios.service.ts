@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -6,18 +6,45 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UsuariosService {
-  baseUrlLocal: string = 'http://localhost:3307/api';
-  baseUrl: string = 'https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api';
+  // baseUrlLocal: string = 'http://localhost:3307/api';
+  baseUrlLocal: string = 'https://158.69.156.104:3307/api';
   constructor(private http: HttpClient) {
 
   }
-  public getUsuarios(): Observable<any> {
-    return this.http.get(`${this.baseUrlLocal}/users`);
+  public getUsuarios(token:string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer '  + token
+    });
+    
+    const options = { headers: headers };
+    return this.http.get(`${this.baseUrlLocal}/users`,options);
   }
-  public deleteUsuario(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrlLocal}/users/${id}`);
+  public deleteUsuario(id: number, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer '  + token
+    });
+    
+    const options = { headers: headers };
+    return this.http.delete(`${this.baseUrlLocal}/users/${id}`,options);
   }
-  public editUsuario(id: number, nome: any, email: any, password: any): Observable<any> {
-    return this.http.put(`${this.baseUrlLocal}/users/${id}`, {nome, email, password});
+  public editUsuario(id: number, user:any, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer '  + token
+    });
+    
+    const options = { headers: headers };
+    return this.http.put(`${this.baseUrlLocal}/users/${id}`, user, options);
+  }
+  public userId(ids: any, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer '  + token
+    });
+    
+    const options = { headers: headers };
+    return this.http.post(`${this.baseUrlLocal}/usersIds`,ids,options);
   }
 }

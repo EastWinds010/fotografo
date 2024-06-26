@@ -37,3 +37,18 @@
       </div>
     </div>
   </div>
+  <style>
+    .dialog-button-container {
+        display: flex;
+        justify-content: center;
+    }
+  </style>
+  
+  <p-dialog [header]='mensagem' [closable]="false" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+    <div class="dialog-button-container">
+        <p-button label="OK" (click)="onLogin()" />
+    </div>
+  </p-dialog>
+  <div *ngIf="isLoading">
+    <app-loading></app-loading>
+  </div>

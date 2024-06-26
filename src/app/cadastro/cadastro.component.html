@@ -4,19 +4,21 @@
     <div style="display: flex;">
       <div class="col-12 md:col-4" style="width: 40%;margin-right: 1%;">
         <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Nome Completo" [(ngModel)]="user.nome" (input)="validadeName($event)" [ngClass]="{'error-input': showErrorNameMessage}">
+          <input type="text" pInputText placeholder="Nome Completo" [(ngModel)]="user.nome"
+            (input)="validadeName($event)" [ngClass]="{'error-input': showErrorNameMessage}">
         </div>
       </div>
 
       <div class="col-12 md:col-4" style="width: 30%; margin-right: 1%;">
-        <div class="p-inputgroup" >
-          <input type="email" pInputText placeholder="E-Mail" [(ngModel)]="user.email" (input)="checkEmail()" [ngClass]="{'error-input': showErrorEmailMessage}">
+        <div class="p-inputgroup">
+          <input type="email" pInputText placeholder="E-Mail" [(ngModel)]="user.email" (input)="checkEmail()"
+            [ngClass]="{'error-input': showErrorEmailMessage}">
         </div>
         <div *ngIf="showErrorEmailMessage">
           <small class="error-message" style="color: red;">{{mensageEmail}}</small>
         </div>
       </div>
-      
+
 
       <div class="col-12 md:col-4" style="width: 30%;">
         <div class="p-inputgroup">
@@ -28,30 +30,23 @@
     <div style="display: flex; margin-top: 1%;">
       <div class="col-12 md:col-4" style="width: 50%;margin-right: 1%;">
         <div class="p-inputgroup">
-          <input type="tel" mask="000.000.000-00" pInputText placeholder="CPF" [(ngModel)]="user.cpf" (input)="checkCpf()" maxlength="14" [ngClass]="{'error-input': showErrorCpfMessage}">
+          <input type="tel" mask="000.000.000-00" pInputText placeholder="CPF" [(ngModel)]="user.cpf"
+            (input)="checkCpf()" maxlength="14" [ngClass]="{'error-input': showErrorCpfMessage}">
         </div>
         <div *ngIf="showErrorCpfMessage">
           <small class="error-message" style="color: red;">{{mensageCpf}}</small>
         </div>
       </div>
-      <div class="col-12 md:col-4" style="width: 50%;">
+      <div class="col-12 md:col-4" style="width: 50%;margin-right: 1%;">
         <div class="p-inputgroup">
           <input type="text" mask="AA-00.000.000" pInputText placeholder="RG" (input)="convertCaps($event)"
             [(ngModel)]="user.rg">
         </div>
       </div>
-      <!-- <div class="col-12 md:col-4" style="width: 25%;margin-right: 1%;">
-        <div class="p-inputgroup">
-
-          <input type="password" pInputText placeholder="Senha" [(ngModel)]="user.password">
-        </div>
+      <div class="col-12 md:col-4" style="width: 50%;">
+        <p-dropdown [options]="cities" [(ngModel)]="selectedCity" optionLabel="name"
+          placeholder="Selecione o Tipo de Usuário" />
       </div>
-      <div class="col-12 md:col-4" style="width: 25%;">
-        <div class="p-inputgroup">
-
-          <input type="password" pInputText placeholder="Confirme Senha"[(ngModel)]="confirmPassword">
-        </div>
-      </div> -->
     </div>
   </div>
   <h5>Endereço</h5>
@@ -59,24 +54,24 @@
     <div style="display: flex;">
       <div class="col-12 md:col-4" style="width: 35%;margin-right: 1%;">
         <div class="p-inputgroup">
-          <input type="text" pInputText placeholder="Rua" [(ngModel)]="adress.street">
+          <input type="text" pInputText placeholder="Rua" [(ngModel)]="endereco.rua">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 15%;margin-right: 1%;">
         <div class="p-inputgroup">
-          <input type="tel" pInputText placeholder="Número" [(ngModel)]="adress.number">
+          <input type="tel" pInputText placeholder="Número" [(ngModel)]="endereco.numero">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 25%;margin-right: 1%;">
         <div class="p-inputgroup">
 
-          <input type="text" pInputText placeholder="Bairro" [(ngModel)]="adress.neighborhood">
+          <input type="text" pInputText placeholder="Bairro" [(ngModel)]="endereco.bairro">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 25%;">
         <div class="p-inputgroup">
 
-          <input type="text" pInputText placeholder="Cidade" [(ngModel)]="adress.city">
+          <input type="text" pInputText placeholder="Cidade" [(ngModel)]="endereco.cidade">
         </div>
       </div>
     </div>
@@ -84,25 +79,25 @@
       <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
         <div class="p-inputgroup">
 
-          <input type="text" pInputText placeholder="Estado" [(ngModel)]="adress.state">
+          <input type="text" pInputText placeholder="Estado" [(ngModel)]="endereco.estado">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
         <div class="p-inputgroup">
 
-          <input type="text" pInputText placeholder="País" [(ngModel)]="adress.country">
+          <input type="text" pInputText placeholder="País" [(ngModel)]="endereco.pais">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 20%;margin-right: 1%;">
         <div class="p-inputgroup">
 
-          <input type="tel" mask="00.000-000" pInputText placeholder="CEP" [(ngModel)]="adress.cep">
+          <input type="tel" mask="00.000-000" pInputText placeholder="CEP" [(ngModel)]="endereco.cep">
         </div>
       </div>
       <div class="col-12 md:col-4" style="width: 40%;">
         <div class="p-inputgroup">
 
-          <input type="text" pInputText placeholder="Complemento" [(ngModel)]="adress.complement">
+          <input type="text" pInputText placeholder="Complemento" [(ngModel)]="endereco.complemento">
         </div>
       </div>
     </div>
@@ -111,15 +106,18 @@
   <div class="grid p-fluid">
     <div style="display: flex;">
 
-        <div class="p-inputgroup">
-          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone1" style="width: 35%;margin-right: 1%;">
-        </div>
-        <div class="p-inputgroup">
-          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone2" style="width: 35%;margin-right: 1%;">
-        </div>
-        <div class="p-inputgroup">
-          <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone3" style="width: 35%;margin-right: 1%;">
-        </div>
+      <div class="p-inputgroup">
+        <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone1"
+          style="width: 35%;margin-right: 1%;">
+      </div>
+      <div class="p-inputgroup">
+        <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone2"
+          style="width: 35%;margin-right: 1%;">
+      </div>
+      <div class="p-inputgroup">
+        <input type="tel" mask="(00) 0 0000-0000" pInputText placeholder="(00) 0 0000-0000" [(ngModel)]="phone3"
+          style="width: 35%;margin-right: 1%;">
+      </div>
     </div>
   </div>
   <div class="centered-div">
@@ -127,9 +125,15 @@
   </div>
 </div>
 
-    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-        <p class="m-0 inline-flex align-items-center justify-content-center">{{mensage}}
-        </p>
-        <ng-template pTemplate="footer">
-            <p-button icon="pi pi-check" (click)="visible = false" label="Ok" pAutoFocus [autofocus]="true"></p-button>
-        </ng-template>
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <p class="m-0 inline-flex align-items-center justify-content-center">{{mensage}}
+  </p>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" (click)="visible = false" label="Ok" pAutoFocus [autofocus]="true"></p-button>
+  </ng-template>
+
+  <div *ngIf="isLoading">
+    <app-loading></app-loading>
+  </div>
+  

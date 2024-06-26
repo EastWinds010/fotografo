@@ -6,12 +6,13 @@ import { Observable, take } from 'rxjs';
   providedIn: 'root'
 })
 export class ResetPasswordService {
-  baseUrlLocal: string = 'http://localhost:3307/api';
-  baseUrl: string = 'https://oracle.garrysmod.com.br/http://51.222.103.202:3306/api';
+  // baseUrlLocal: string = 'http://localhost:3307/api';
+  baseUrlLocal: string = 'https://158.69.156.104:3307/api';
   constructor(private http: HttpClient) {
 
   };
   public verifyCredentials(credentials: any): Observable<any> {
+    console.log(this.baseUrlLocal)
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(`${this.baseUrlLocal}/verifyCredentials`, credentials).pipe(take(1));
   };

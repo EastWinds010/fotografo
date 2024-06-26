@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ɵɵsetComponentScope } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,9 +8,12 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { DialogModule } from 'primeng/dialog';
+import { LoginService } from '../../services/login.service';
+import { LoadingComponent } from "../loading/loading.component";
 
 
 
@@ -22,32 +25,35 @@ interface User {
   rg: string;
   password: string;
   role: number;
-  phone: string[];
-  address: Address[];
+  telefone: string[];
+  endereco: Address[];
 
 }
 
 interface Address {
-  street: string;
-  number: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  country: string;
+  rua: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  pais: string;
   cep: string;
-  complement: string;
+  complemento: string;
 }
 
-
+interface City {
+  name: string;
+  code: number;
+}
 
 @Component({
-  selector: 'app-cadastro',
-  standalone: true,
-  imports: [RouterOutlet, ButtonModule, FormsModule, ReactiveFormsModule, InputTextModule, CheckboxModule, RadioButtonModule, InputNumberModule, CommonModule, NgxMaskDirective, NgxMaskPipe, DialogModule],
-  templateUrl: './cadastro.component.html',
-  styleUrl: './cadastro.component.css'
+    selector: 'app-cadastro',
+    standalone: true,
+    templateUrl: './cadastro.component.html',
+    styleUrl: './cadastro.component.css',
+    imports: [RouterOutlet, ButtonModule, FormsModule, ReactiveFormsModule, InputTextModule, CheckboxModule, RadioButtonModule, InputNumberModule, CommonModule, NgxMaskDirective, NgxMaskPipe, DialogModule, DropdownModule, LoadingComponent]
 })
-export class CadastroComponent {
+export class CadastroComponent implements OnInit {
   showErrorCpfMessage: boolean = false;
   showErrorEmailMessage: boolean = false;
   showErrorNameMessage: boolean = false;
@@ -62,15 +68,15 @@ export class CadastroComponent {
   confirmPassword: string = '';
   
 
-  adress: Address = {
-    street: '',
-    number: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    country: '',
+  endereco: Address = {
+    rua: '',
+    numero: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    pais: '',
     cep: '',
-    complement: ''
+    complemento: ''
   };
 
   user: User = {
@@ -81,21 +87,63 @@ export class CadastroComponent {
     rg: '',
     password: '',
     role: 1,
-    phone: [this.phone1, this.phone2, this.phone3],
-    address: [this.adress]
+    telefone: ['', '', ''],
+    endereco: [this.endereco]
   };
+  refreshToken: string = '';
+
+  cities: City[] | undefined;
+
+  selectedCity: City | undefined;
+  isLoading: boolean = false;
 
 
   constructor(
-    private cadastroSercice: CadastroService,
+    private cadastroService: CadastroService,
+    private loginService: LoginService,
     private router: Router
   ) { }
+
+  ngOnInit(): void {
+    if (localStorage.getItem('refreshToken') != null) {
+      this.refreshToken = localStorage.getItem('refreshToken')!;
+
+      const body = {
+        refreshToken: this.refreshToken
+      };
+      this.loginService.token(body).subscribe({
+        next: (data) => {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('refreshToken', data.refreshToken);
+        },
+        error: (err) => {
+          console.error(err.status);
+          if (err.status === 401) {
+            localStorage.clear();
+            this.router.navigate(['/login']);
+          }
+        },
+
+      })
+    }
+
+    this.cities = [
+      { name: 'Administrador', code: 1 },
+      { name: 'Fotografo', code: 2 },
+  ];
+  }
+
   onLogin() {
     this.router.navigate(['/login']);
   }
 
   cadastroUsuario() {
-    this.cadastroSercice.createUser(this.user).subscribe({
+    this.isLoading = true;
+    this.user.telefone[0] = this.phone1;
+    this.user.telefone[1] = this.phone2;
+    this.user.telefone[2] = this.phone3;
+    this.user.role = this.selectedCity!.code;
+    this.cadastroService.createUser(this.user, this.refreshToken).subscribe({
       next: (data) => {
         if (data.status == 200) {
          this.showDialog('Cadastro realizado com sucesso!');
@@ -107,18 +155,18 @@ export class CadastroComponent {
           rg: '',
           password: '',
           role: 1,
-          phone: ['', '', ''],
-          address: [this.adress]
+          telefone: ['', '', ''],
+          endereco: [this.endereco]
         };
-        this.adress = {
-          street: '',
-          number: '',
-          neighborhood: '',
-          city: '',
-          state: '',
-          country: '',
+        this.endereco = {
+          rua: '',
+          numero: '',
+          bairro: '',
+          cidade: '',
+          estado: '',
+          pais: '',
           cep: '',
-          complement: ''
+          complemento: ''
         };
         this.confirmPassword = '';
         this.phone1 = '';
@@ -126,12 +174,14 @@ export class CadastroComponent {
         this.phone3 = '';
         } else {
           this.showDialog('Erro ao realizar cadastro!');
+          console.log(data)
         }
       },
       error: (error) => {
         console.error(error);
       },
     });
+    this.isLoading = false;
   }
   showDialog(mensage: string) {
     this.visible = true;
@@ -147,7 +197,7 @@ export class CadastroComponent {
   checkCpf() {
     if (this.validateCpf(this.user.cpf)) {
       this.showErrorCpfMessage = false;
-      this.cadastroSercice.checkCpf(this.user.cpf).subscribe({
+      this.cadastroService.checkCpf(this.user.cpf).subscribe({
         next: (data) => {
           if (data.status != 200) {
             this.showErrorCpfMessage = true;
@@ -171,7 +221,7 @@ export class CadastroComponent {
 
     if (emailPattern.test(this.user.email)) {
       this.showErrorEmailMessage = false;
-      this.cadastroSercice.checkEmail(this.user.email).subscribe({
+      this.cadastroService.checkEmail(this.user.email).subscribe({
         next: (data) => {
           if (data.status != 200) {
             this.showErrorEmailMessage = true;

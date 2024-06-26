@@ -15,7 +15,31 @@
     </div>
     <div class="footer">
       <a href="/recuperar-senha">Esqueci minha senha</a>
-      <small>Versão 0.0.4</small>
+      <small>Versão 0.0.9</small>
     </div>
   </div>
+</div>
+
+<!--
+# Login
+ - Modal para avisar que a senha está incorreta
+ - Aviso que email está no padrão incorreto
+-->
+
+<style>
+  .dialog-button-container {
+      display: flex;
+      justify-content: center;
+  }
+</style>
+
+<p-dialog header="Usuário ou senha inválidos" [closable]="false" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+  <div class="dialog-button-container">
+      <p-button label="Ok" (click)="visible = false" />
+  </div>
+</p-dialog>
+
+
+<div *ngIf="isLoading">
+  <app-loading></app-loading>
 </div>
